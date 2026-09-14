@@ -1,0 +1,191 @@
+/* ============================================================
+   Feed the Crew — shared design system
+   Palette: pantry/kitchen, not the default cream+terracotta combo.
+   Type: Fraunces (display) + Work Sans (body/UI)
+   ============================================================ */
+
+:root{
+  --paper: #F3EEE2;
+  --card: #FBF8F1;
+  --ink: #23291F;
+  --ink-soft: #52604A;
+  --wheat: #C98A2C;
+  --wheat-dark: #A66F1E;
+  --tomato: #A23B2E;
+  --tomato-dark: #832F25;
+  --line: #DCD3BE;
+  --white: #FFFFFF;
+  --max: 1100px;
+}
+
+*{box-sizing:border-box}
+
+html{scroll-behavior:smooth}
+
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'Work Sans', system-ui, sans-serif;
+  font-size:17px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+
+h1,h2,h3,h4{
+  font-family:'Fraunces', Georgia, serif;
+  color:var(--ink);
+  line-height:1.15;
+  margin:0 0 .5em;
+  font-weight:600;
+}
+
+h1{font-size:clamp(2.2rem, 5vw, 3.6rem); font-weight:500; letter-spacing:-0.01em}
+h2{font-size:clamp(1.7rem, 3.4vw, 2.3rem)}
+h3{font-size:1.3rem}
+
+p{margin:0 0 1em; max-width:62ch}
+a{color:var(--tomato)}
+a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visible, select:focus-visible{
+  outline:3px solid var(--wheat); outline-offset:2px;
+}
+
+.wrap{max-width:var(--max); margin:0 auto; padding:0 24px}
+
+/* ---------- Nav ---------- */
+header.site-nav{
+  border-bottom:1px solid var(--line);
+  background:var(--paper);
+}
+.nav-row{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:20px 24px; max-width:var(--max); margin:0 auto;
+}
+.wordmark{
+  font-family:'Fraunces', serif; font-size:1.35rem; font-weight:600;
+  color:var(--ink); text-decoration:none;
+}
+.wordmark span{color:var(--tomato)}
+.nav-links{display:flex; gap:28px; align-items:center; list-style:none; margin:0; padding:0}
+.nav-links a{color:var(--ink); text-decoration:none; font-weight:500; font-size:.96rem}
+.nav-links a:hover{color:var(--tomato)}
+.nav-cta{
+  background:var(--tomato); color:var(--white)!important; padding:10px 20px;
+  border-radius:8px; font-weight:600!important;
+}
+.nav-toggle{display:none}
+
+@media(max-width:760px){
+  .nav-links{
+    position:fixed; inset:0 0 0 auto; width:78%; max-width:320px;
+    background:var(--card); flex-direction:column; align-items:flex-start;
+    padding:90px 28px 28px; gap:22px; transform:translateX(101%);
+    transition:transform .25s ease; border-left:1px solid var(--line);
+  }
+  .nav-links.open{transform:translateX(0)}
+  .nav-toggle{
+    display:block; background:none; border:0; font-size:1.6rem; cursor:pointer;
+    color:var(--ink); line-height:1;
+  }
+}
+
+/* ---------- Buttons ---------- */
+.btn{
+  display:inline-block; padding:13px 26px; border-radius:9px; font-weight:600;
+  text-decoration:none; font-size:.98rem; border:1px solid transparent; cursor:pointer;
+  font-family:'Work Sans', sans-serif;
+}
+.btn-primary{background:var(--tomato); color:var(--white)}
+.btn-primary:hover{background:var(--tomato-dark)}
+.btn-secondary{background:transparent; border-color:var(--ink); color:var(--ink)}
+.btn-secondary:hover{background:var(--ink); color:var(--paper)}
+.btn-ghost{background:transparent; color:var(--ink); text-decoration:underline; padding:13px 6px}
+
+/* ---------- Sections ---------- */
+section{padding:64px 0}
+section.tight{padding:36px 0}
+.section-divider{border:0; border-top:1px solid var(--line); margin:0}
+
+.eyebrow-note{color:var(--ink-soft); font-size:.95rem; margin-bottom:6px}
+
+/* ---------- Cards ---------- */
+.card{
+  background:var(--card); border:1px solid var(--line); border-radius:14px;
+  padding:28px;
+}
+
+/* ---------- Steps (genuinely sequential content only) ---------- */
+.steps{display:grid; grid-template-columns:repeat(3,1fr); gap:32px; margin-top:36px}
+.step .step-num{
+  font-family:'Fraunces', serif; font-size:2.4rem; color:var(--wheat);
+  font-weight:500; margin-bottom:6px; line-height:1;
+}
+@media(max-width:800px){.steps{grid-template-columns:1fr}}
+
+/* ---------- Audience cards ---------- */
+.audience-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:32px}
+@media(max-width:800px){.audience-grid{grid-template-columns:1fr}}
+.audience-grid .card h3{margin-bottom:8px}
+.audience-grid svg{margin-bottom:14px}
+
+/* ---------- Pricing ---------- */
+.pricing-grid{display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:36px; align-items:stretch}
+@media(max-width:760px){.pricing-grid{grid-template-columns:1fr}}
+.plan{
+  background:var(--card); border:1px solid var(--line); border-radius:16px;
+  padding:32px; display:flex; flex-direction:column; position:relative;
+}
+.plan.featured{border-color:var(--tomato); border-width:2px}
+.plan .tag{
+  position:absolute; top:-14px; left:28px; background:var(--tomato); color:var(--white);
+  font-size:.8rem; font-weight:600; padding:5px 14px; border-radius:20px;
+}
+.plan .price{font-family:'Fraunces', serif; font-size:2.4rem; margin:12px 0 2px}
+.plan .price small{font-size:1rem; font-family:'Work Sans',sans-serif; color:var(--ink-soft); font-weight:400}
+.plan ul{list-style:none; padding:0; margin:20px 0; flex-grow:1}
+.plan li{padding:8px 0 8px 26px; position:relative; border-top:1px solid var(--line)}
+.plan li:first-child{border-top:0}
+.plan li::before{content:"✓"; position:absolute; left:0; color:var(--wheat-dark); font-weight:700}
+
+.compare-table{width:100%; border-collapse:collapse; margin-top:20px}
+.compare-table th, .compare-table td{
+  text-align:left; padding:12px 14px; border-bottom:1px solid var(--line); font-size:.96rem;
+}
+.compare-table th{font-family:'Fraunces',serif; font-weight:600; font-size:1.05rem}
+
+/* ---------- FAQ accordion (native, no JS) ---------- */
+.faq-item{border-bottom:1px solid var(--line)}
+.faq-item summary{
+  cursor:pointer; padding:20px 4px; font-weight:600; font-size:1.05rem;
+  list-style:none; display:flex; justify-content:space-between; align-items:center; gap:16px;
+}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::after{
+  content:"+"; font-family:'Fraunces',serif; font-size:1.6rem; color:var(--wheat-dark);
+  flex-shrink:0;
+}
+.faq-item[open] summary::after{content:"–"}
+.faq-item .faq-body{padding:0 4px 22px; color:var(--ink-soft); max-width:70ch}
+.faq-group-title{margin-top:44px}
+
+/* ---------- Support ---------- */
+.support-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:32px}
+@media(max-width:800px){.support-grid{grid-template-columns:1fr}}
+
+/* ---------- Footer ---------- */
+footer.site-footer{border-top:1px solid var(--line); padding:44px 0 30px; margin-top:40px}
+.footer-grid{display:flex; justify-content:space-between; flex-wrap:wrap; gap:28px}
+.footer-links{display:flex; gap:24px; list-style:none; padding:0; margin:0; flex-wrap:wrap}
+.footer-links a{color:var(--ink-soft); text-decoration:none; font-size:.92rem}
+.footer-links a:hover{color:var(--tomato)}
+.footer-note{color:var(--ink-soft); font-size:.85rem; margin-top:24px}
+
+/* ---------- Legal pages ---------- */
+.legal h2{margin-top:2em; font-size:1.4rem}
+.legal p, .legal li{color:var(--ink-soft)}
+.legal .updated{color:var(--ink-soft); font-size:.9rem}
+
+/* ---------- Hero illustration ---------- */
+.hero-grid{display:grid; grid-template-columns:1.1fr .9fr; gap:48px; align-items:center}
+@media(max-width:860px){.hero-grid{grid-template-columns:1fr}}
+.hero-cta-row{display:flex; gap:14px; flex-wrap:wrap; margin-top:28px}

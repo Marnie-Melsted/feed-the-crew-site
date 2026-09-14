@@ -1,0 +1,4530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Feed the Crew — Menu, Macro & Bulk Recipe Planner</title>
+<style>
+:root{--bg:#f6f4ee;--card:#fff;--ink:#243029;--muted:#66736b;--accent:#496a52;--accent2:#dce7dd;--line:#d9ddd8;--soft:#f7faf7}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+header{padding:34px 20px 20px;text-align:center}
+h1{margin:0;font-size:clamp(2rem,6vw,3.5rem);letter-spacing:-.04em}
+header p{max-width:820px;margin:10px auto 0;color:var(--muted)}
+main{max-width:1200px;margin:auto;padding:0 18px 60px}
+.grid{display:grid;grid-template-columns:360px 1fr;gap:16px}
+@media(max-width:920px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 8px 30px rgba(36,48,41,.05)}
+label{display:block;font-weight:800;margin:13px 0 6px}
+input,select,button,textarea{font:inherit}
+input,select,textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:11px;background:#fff;font-family:inherit}
+.ing-row{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:6px;margin-bottom:6px;align-items:center}
+.ing-row input,.ing-row select{padding:8px}
+.ing-row button{padding:8px 10px}
+.custom-recipe-chip{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#fff;border:1px solid var(--line);border-radius:10px;margin-bottom:6px}
+button{border:0;border-radius:11px;padding:11px 14px;font-weight:800;cursor:pointer}
+.primary{background:var(--accent);color:white;width:100%;margin-top:16px}
+.secondary{background:var(--accent2);color:var(--ink)}
+.pill{display:inline-block;background:var(--accent2);padding:5px 9px;border-radius:999px;font-size:.78rem;font-weight:800}
+.sub,.note{color:var(--muted);font-size:.9rem}
+.section{border-top:1px solid var(--line);padding-top:16px;margin-top:16px}
+.meal-block{border-top:1px solid var(--line);padding:18px 0}
+.meal-block:first-child{border-top:0}
+.booklet-day{border-top:1px solid var(--line);padding:18px 0}
+.booklet-day:first-child{border-top:0}
+.day-title{font-size:2.2rem;font-weight:900;margin:0 0 12px;line-height:1.1}
+.day-tabs{display:flex;gap:8px;overflow-x:auto;padding:4px 0 10px;margin:14px 0 4px}
+.day-tab-btn{flex:0 0 auto;background:var(--accent2);color:var(--ink);border:0;border-radius:12px;padding:9px 16px;font-weight:800;cursor:pointer;text-align:center;white-space:nowrap;display:flex;flex-direction:column;line-height:1.25}
+.day-tab-btn .tab-sub{font-weight:600;font-size:.72rem;color:var(--muted)}
+.day-tab-btn.active{background:var(--accent);color:#fff}
+.day-tab-btn.active .tab-sub{color:#e3ece4}
+.meal-title{font-size:1.7rem;font-weight:900;margin:16px 0 8px;text-transform:capitalize}
+.options{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:800px){.options{grid-template-columns:1fr}}
+.option{border:1px solid var(--line);border-radius:14px;padding:13px;background:#fcfdfb}
+.option h4{margin:0 0 7px}
+.option.selected{outline:3px solid var(--accent2)}
+.option button{width:100%;margin-top:8px}.option button:disabled{opacity:.55;cursor:not-allowed}
+.section-label{margin:0 0 8px;text-transform:uppercase;letter-spacing:.04em;font-size:.78rem;color:var(--muted);font-weight:800}
+.mains-section{border-left:4px solid var(--accent);padding-left:14px;margin:12px 0}
+.sides-section{background:var(--soft);border:1px dashed var(--line);border-radius:14px;padding:14px;margin:12px 0}
+.sides-section .option{background:#fff}
+.recipe{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px}
+.recipe ul,.recipe ol{padding-left:20px}
+.recipe li{margin-bottom:5px}
+.macro-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+@media(max-width:650px){.macro-grid{grid-template-columns:repeat(2,1fr)}}
+.macro{background:var(--soft);border-radius:12px;padding:10px;text-align:center}
+.macro strong{display:block;font-size:1.1rem}
+.toolbar{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.print-row{display:flex;gap:8px;flex-wrap:wrap}
+.print-choice-row{display:flex;gap:10px;flex-wrap:wrap}
+.print-choice-row button{flex:1 1 180px}
+.grocery-cols{columns:2;column-gap:30px}
+@media(max-width:650px){.grocery-cols{columns:1}}
+.grocery-cols li{break-inside:avoid;margin-bottom:5px}
+.cost-panel{margin-top:18px;padding:16px;background:#f7faf7;border:1px solid var(--line);border-radius:15px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:13px}
+@media(max-width:480px){.field-row{grid-template-columns:1fr}}
+.field-row label{margin-top:0}
+.panel-heading{margin:0 0 10px;font-size:1.05rem}
+.cost-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+@media(max-width:700px){.cost-grid{grid-template-columns:repeat(2,1fr)}}
+.cost-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:.9rem}
+.cost-table th,.cost-table td{border-bottom:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}
+.cost-table input{width:95px;padding:7px}
+.cost-alert{padding:12px;border-radius:12px;margin:12px 0;font-weight:800}
+.cost-ok{background:#e6f2e7}
+.cost-over{background:#f7e7e2}
+.cost-pending{background:#f4f1e6}
+.cost-note{font-size:.8rem;color:var(--muted)}
+.edu-block{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px}
+.edu-block h5{margin:0 0 6px}
+.storage-note{font-size:.8rem;color:var(--muted);margin-top:6px}
+
+details summary{cursor:pointer;font-weight:800}
+footer{text-align:center;color:var(--muted);padding:22px;font-size:.82rem}
+@media print{
+  body{background:white}
+  .controls,.toolbar button,footer,.print-choice-row,.costing-report,.day-tabs{display:none!important}
+  .day-panel{display:block!important}
+  main{max-width:none;padding:0}.card{border:0;box-shadow:none}
+  .options{grid-template-columns:1fr}.option:not(.selected){display:none}
+
+  .print-only-menu,.print-only-recipes,.print-only-nutrition{display:none}
+
+  body[data-print="menu"] .meal-block,
+  body[data-print="menu"] .print-only-grocery,
+  body[data-print="menu"] .print-only-recipes,
+  body[data-print="menu"] .print-only-nutrition{display:none}
+  body[data-print="menu"] .print-only-menu{display:block}
+
+  body[data-print="grocery"] .meal-block,
+  body[data-print="grocery"] .print-only-menu,
+  body[data-print="grocery"] .print-only-recipes,
+  body[data-print="grocery"] .print-only-nutrition{display:none}
+  body[data-print="grocery"] .print-only-grocery{display:block}
+
+  body[data-print="recipes"] .meal-block,
+  body[data-print="recipes"] .print-only-menu,
+  body[data-print="recipes"] .print-only-grocery,
+  body[data-print="recipes"] .print-only-nutrition{display:none}
+  body[data-print="recipes"] .print-only-recipes{display:block}
+
+  body[data-print="nutrition"] .meal-block,
+  body[data-print="nutrition"] .print-only-menu,
+  body[data-print="nutrition"] .print-only-grocery,
+  body[data-print="nutrition"] .print-only-recipes{display:none}
+  body[data-print="nutrition"] .print-only-nutrition{display:block}
+}
+</style>
+</head>
+<body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;1,500&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  .app-nav{border-bottom:1px solid #DCD3BE; background:#F3EEE2; font-family:'Work Sans',sans-serif}
+  .app-nav-row{display:flex; align-items:center; justify-content:space-between; padding:16px 24px; max-width:1200px; margin:0 auto}
+  .app-wordmark{font-family:'Fraunces',serif; font-size:1.2rem; font-weight:600; color:#23291F; text-decoration:none}
+  .app-wordmark span{color:#A23B2E}
+  .app-nav-links{display:flex; gap:20px; align-items:center; list-style:none; margin:0; padding:0}
+  .app-nav-links a{color:#23291F; text-decoration:none; font-weight:500; font-size:.92rem}
+  .app-nav-links a:hover{color:#A23B2E}
+</style>
+<header class="app-nav">
+  <div class="app-nav-row">
+    <a href="index.html" class="app-wordmark">Feed the <span>Crew</span></a>
+    <ul class="app-nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="pricing.html">Pricing</a></li>
+      <li><a href="faq.html">Q&amp;A</a></li>
+      <li><a href="support.html">Support</a></li>
+    </ul>
+  </div>
+</header>
+
+<div id="accessLoading" style="text-align:center;margin:80px auto;font-family:'Work Sans',sans-serif;color:#52604A">Checking your subscription…</div>
+
+<div id="paywallGate" style="display:none;max-width:520px;margin:80px auto;padding:0 24px;font-family:'Work Sans',sans-serif;text-align:center">
+  <h2 style="font-family:'Fraunces',serif;font-size:1.8rem;margin-bottom:10px">Subscribe to start planning</h2>
+  <p id="paywallMessage" style="color:#52604A;margin-bottom:24px">You'll need an active plan to use the planner. Choose one below — you'll be brought right back here once you've paid.</p>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+    <a id="paywallHomeLink" href="pricing.html" style="background:transparent;border:1px solid #23291F;color:#23291F;padding:13px 24px;border-radius:9px;text-decoration:none;font-weight:600">Home &amp; Family — $9/mo</a>
+    <a id="paywallProLink" href="pricing.html" style="background:#A23B2E;color:#fff;padding:13px 24px;border-radius:9px;text-decoration:none;font-weight:600">Pro &amp; Catering — $39/mo</a>
+  </div>
+  <p style="margin-top:20px"><a href="faq.html" style="color:#52604A">Questions first? Read the Q&amp;A</a></p>
+</div>
+
+<div id="toolContent" hidden>
+<header>
+  <span class="pill">VERSION 10</span>
+  <h1>Feed the Crew</h1>
+  <p>Choose from menus per meal, calculate athlete protein targets, generate detailed recipes, and scale production for a home kitchen or bulk catering.</p>
+</header>
+
+<main>
+<div class="grid">
+<section class="card controls">
+  <div class="toolbar" style="margin-bottom:14px">
+    <h2 style="margin:0">Planner</h2>
+    <button class="secondary" onclick="resetAllSelections()">Reset all meal selections</button>
+  </div>
+  <p class="sub" style="margin-top:-8px;margin-bottom:14px">Clears meal choices, sides, dietary swaps, exclusions and duplicated days back to defaults. Your saved grocery prices are not affected.</p>
+
+  <div class="cost-panel">
+    <h3 class="panel-heading">Group & Schedule</h3>
+    <div class="field-row">
+      <div>
+        <label for="people">People</label>
+        <input id="people" type="number" min="4" max="200" value="20" oninput="liveUpdate()">
+      </div>
+      <div>
+        <label for="days">Days</label>
+        <input id="days" type="number" min="1" max="7" value="3" oninput="liveUpdate()">
+      </div>
+    </div>
+
+    <label for="startDay">Week starts on</label>
+    <select id="startDay" onchange="generate(false)">
+      <option value="1" selected>Monday</option>
+      <option value="2">Tuesday</option>
+      <option value="3">Wednesday</option>
+      <option value="4">Thursday</option>
+      <option value="5">Friday</option>
+      <option value="6">Saturday</option>
+      <option value="0">Sunday</option>
+    </select>
+
+    <div class="field-row">
+      <div>
+        <label for="firstMeal">First meal</label>
+        <select id="firstMeal" onchange="generate(false)">
+          <option value="breakfast" selected>Breakfast</option>
+          <option value="lunch">Lunch</option>
+          <option value="dinner">Dinner</option>
+        </select>
+      </div>
+      <div>
+        <label for="lastMeal">Last meal</label>
+        <select id="lastMeal" onchange="generate(false)">
+          <option value="breakfast">Breakfast</option>
+          <option value="lunch">Lunch</option>
+          <option value="dinner" selected>Dinner</option>
+        </select>
+      </div>
+    </div>
+    <p class="sub">First meal applies to Day 1; last meal applies to the final day.</p>
+  </div>
+
+  <div class="cost-panel">
+    <h3 class="panel-heading">Nutrition Targets</h3>
+
+    <label for="profile">Group appetite profile</label>
+    <select id="profile" onchange="applyProfile()">
+      <option value="balanced">Balanced mixed group</option>
+      <option value="teen_hockey">Teen hockey / football</option>
+      <option value="endurance">Endurance camp</option>
+      <option value="ski">Ski / snowboard team</option>
+      <option value="youth">Mixed youth sports</option>
+      <option value="family">Families</option>
+      <option value="retreat">Wellness retreat</option>
+    </select>
+
+    <label for="calories">Calories/person/day</label>
+    <input id="calories" type="number" min="1400" max="5000" step="50" value="2400" oninput="liveUpdate()">
+
+    <label><input id="useWeight" type="checkbox" style="width:auto" onchange="toggleWeight()"> Use body weight for protein calculation</label>
+    <div id="weightBox" hidden>
+      <label for="weight">Average body weight</label>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px">
+        <input id="weight" type="number" value="60" min="20" max="250" step="0.5" oninput="liveUpdate()">
+        <select id="weightUnit" onchange="generate(false)"><option value="kg">kg</option><option value="lb">lb</option></select>
+      </div>
+    </div>
+    <p class="sub">When body weight is not used, the planner estimates protein from sport and activity level. The general calorie starting point is 2,000 kcal/day.</p>
+
+    <div class="field-row">
+      <div>
+        <label for="sport">Sport</label>
+        <select id="sport" onchange="generate(false)">
+          <option value="daily">Daily activity</option>
+          <option value="endurance">Running / cycling / XC skiing</option>
+          <option value="team">Soccer / hockey / basketball</option>
+          <option value="ski">Alpine skiing / snowboarding</option>
+          <option value="strength">Strength / power</option>
+        </select>
+      </div>
+      <div>
+        <label for="training">Training level</label>
+        <select id="training" onchange="generate(false)">
+          <option value="rec">Recreational</option>
+          <option value="regular" selected>Regular training</option>
+          <option value="high">Competitive / high-volume</option>
+        </select>
+      </div>
+    </div>
+
+    <label><input id="override" type="checkbox" style="width:auto" onchange="toggleOverride()"> Daily protein amount override</label>
+    <div id="overrideBox" hidden>
+      <label for="proteinOverride">Daily protein amount (g/person/day)</label>
+      <input id="proteinOverride" type="number" value="100" min="30" max="300" oninput="liveUpdate()">
+    </div>
+
+    <div id="proteinBox" class="section"></div>
+  </div>
+
+  <div class="cost-panel">
+    <h3 class="panel-heading">Food Costing — Pro</h3>
+    <p class="sub">Cost estimates stay hidden until you enter your own grocery prices below — no guessed numbers.</p>
+
+    <label for="buffer">Grocery buffer</label>
+    <select id="buffer" onchange="generate(false)">
+      <option value="1" selected>No buffer</option>
+      <option value="1.10">10% (recommended)</option>
+      <option value="1.15">15%</option>
+      <option value="1.20">20%</option>
+    </select>
+
+    <label for="currency">Currency</label>
+    <select id="currency" onchange="generate(false)">
+      <option value="CAD" selected>CAD</option>
+      <option value="USD">USD</option>
+      <option value="EUR">EUR</option>
+    </select>
+
+    <label for="eventBudget">Optional total food budget</label>
+    <input id="eventBudget" type="number" min="0" step="25" placeholder="Example: 4500" oninput="liveUpdate()">
+
+    <label for="receiptUpload" style="margin-top:12px">Scan a grocery receipt or invoice (photo)</label>
+    <input id="receiptUpload" type="file" accept="image/*" onchange="scanReceipt(this)">
+    <p class="storage-note" id="receiptStatus"></p>
+
+    <details style="margin-top:12px">
+      <summary>Advanced: save this price set</summary>
+      <label for="supplierName">Price set name</label>
+      <input id="supplierName" type="text" value="My grocery prices">
+      <button class="secondary" style="width:100%;margin-top:10px" onclick="savePrices()">Save entered prices</button>
+      <p class="storage-note" id="storageNote"></p>
+    </details>
+  </div>
+
+  <div class="cost-panel">
+    <details>
+      <summary><strong>Add Your Own Recipe</strong></summary>
+      <p class="sub" style="margin-top:8px">Add a custom breakfast, lunch or dinner. It appears as an extra option for every day, with ingredients that scale to your group size automatically — same as the built-in recipes.</p>
+
+      <label for="customName">Recipe name</label>
+      <input id="customName" type="text" placeholder="e.g. Grandma's Chicken Pot Pie">
+
+      <label for="customMealType">Meal type</label>
+      <select id="customMealType" onchange="renderCustomDinnerFields()">
+        <option value="breakfast">Breakfast</option>
+        <option value="lunch">Lunch</option>
+        <option value="dinner">Dinner</option>
+      </select>
+
+      <label for="customServing">Serving size description</label>
+      <input id="customServing" type="text" placeholder="e.g. 1 bowl (~450 g)">
+
+      <label>Ingredients</label>
+      <div id="customIngredientRows"></div>
+      <button class="secondary" style="width:100%" onclick="addCustomIngredientRow()">+ Add ingredient</button>
+
+      <div id="customDinnerFields" hidden style="margin-top:10px">
+        <p class="sub">Dinners need a protein, a starch, and at least two vegetable/salad ingredients — pick which of your ingredients above fill those roles.</p>
+        <label for="customProteinIng">Which ingredient is the protein?</label>
+        <select id="customProteinIng"></select>
+        <label for="customStarchIng">Which ingredient is the starch?</label>
+        <select id="customStarchIng"></select>
+        <label for="customVegIng">Vegetables/salad (select at least 2 — Ctrl/Cmd-click for multiple)</label>
+        <select id="customVegIng" multiple size="4"></select>
+      </div>
+
+      <div class="field-row" style="margin-top:10px">
+        <div>
+          <label for="customCal">Calories per serving</label>
+          <input id="customCal" type="number" min="0">
+        </div>
+        <div>
+          <label for="customProtein">Protein per serving (g)</label>
+          <input id="customProtein" type="number" min="0">
+        </div>
+      </div>
+      <button class="secondary" style="width:100%;margin-top:8px" onclick="estimateCustomNutrition()">Estimate calories &amp; protein from ingredients (AI)</button>
+      <p class="storage-note" id="customNutritionStatus"></p>
+
+      <div class="field-row" style="margin-top:8px">
+        <div>
+          <label for="customPrep">Prep time (min)</label>
+          <input id="customPrep" type="number" min="0" value="10">
+        </div>
+        <div>
+          <label for="customCook">Cook time (min)</label>
+          <input id="customCook" type="number" min="0" value="0">
+        </div>
+      </div>
+
+      <label for="customSteps">Method (one step per line)</label>
+      <textarea id="customSteps" rows="3" placeholder="Season and cook the...
+Combine with...
+Serve with..."></textarea>
+
+      <button class="primary" style="width:100%;margin-top:10px" onclick="addCustomRecipe()">Add this recipe to the planner</button>
+      <p class="storage-note" id="customRecipeStatus"></p>
+
+      <div id="customRecipeList" style="margin-top:10px"></div>
+    </details>
+  </div>
+
+  <div class="cost-panel">
+    <h3 class="panel-heading">Dietary Needs — Quick Apply</h3>
+    <p class="sub">Set a headcount once and apply it to every meal in the plan, instead of entering it meal by meal. You can still fine-tune individual meals afterward.</p>
+    <label for="globalGF">Gluten-free needed for how many people, every meal?</label>
+    <input id="globalGF" type="number" min="0" value="0">
+    <label for="globalDF">Dairy-free needed for how many people, every meal?</label>
+    <input id="globalDF" type="number" min="0" value="0">
+    <button class="secondary" style="width:100%;margin-top:10px" onclick="applyGlobalDietary()">Apply to entire week</button>
+  </div>
+
+  <p class="sub">Your plan updates automatically as you change any setting above — no button needed.</p>
+</section>
+
+
+
+<section class="card" id="output">
+  <div class="toolbar">
+    <div><h2 style="margin:0">Your plan</h2><p class="sub">Generate to view menu choices and recipes.</p></div>
+  </div>
+</section>
+</div>
+</main>
+<footer>Planning and food-cost estimates only. Adjust for allergies, medical needs, local food-safety rules, recipe brands, supplier pricing, taxes, delivery, labour and individual appetites.</footer>
+</div><!-- /toolContent -->
+
+<script>
+
+// ===== Access gating: checks Stripe payment before showing the tool =====
+let currentPlan = null; // "home" or "pro" once verified
+
+async function checkAccess(){
+  const params = new URLSearchParams(window.location.search);
+  const sessionId = params.get("session_id");
+
+  if(sessionId){
+    // Just returned from Stripe checkout — verify the payment server-side.
+    try{
+      const resp = await fetch("/.netlify/functions/verify-session?session_id=" + encodeURIComponent(sessionId));
+      const data = await resp.json();
+      if(data.token){
+        localStorage.setItem("ftc_access_token", data.token);
+        // Clean the session_id out of the URL so it can't be reused/bookmarked.
+        window.history.replaceState({}, "", window.location.pathname);
+      }
+    }catch(e){ console.error(e); }
+  }
+
+  const token = localStorage.getItem("ftc_access_token");
+  if(!token){ showPaywall(); return; }
+
+  try{
+    const resp = await fetch("/.netlify/functions/check-access", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ token })
+    });
+    const data = await resp.json();
+    if(data.valid){
+      currentPlan = data.plan;
+      showTool();
+    }else{
+      localStorage.removeItem("ftc_access_token");
+      showPaywall();
+    }
+  }catch(e){
+    console.error(e);
+    showPaywall("We couldn't verify your subscription right now — please try again in a moment.");
+  }
+}
+
+function showPaywall(message){
+  document.getElementById("accessLoading").style.display = "none";
+  document.getElementById("toolContent").hidden = true;
+  document.getElementById("paywallGate").style.display = "block";
+  if(message) document.getElementById("paywallMessage").textContent = message;
+}
+
+function showTool(){
+  document.getElementById("accessLoading").style.display = "none";
+  document.getElementById("paywallGate").style.display = "none";
+  document.getElementById("toolContent").hidden = false;
+  applyPlanRestrictions();
+}
+
+function applyPlanRestrictions(){
+  // Home & Family doesn't get the AI features — hide/disable them rather than
+  // just letting the call fail, so it's clear why.
+  const receiptInput = document.getElementById("receiptUpload");
+  const nutritionBtn = document.querySelector('button[onclick="estimateCustomNutrition()"]');
+  if(currentPlan !== "pro"){
+    if(receiptInput){
+      receiptInput.disabled = true;
+      document.getElementById("receiptStatus").textContent = "AI receipt scanning is available on the Pro & Catering plan.";
+    }
+    if(nutritionBtn){
+      nutritionBtn.disabled = true;
+      nutritionBtn.title = "Available on the Pro & Catering plan";
+    }
+  }
+}
+
+checkAccess();
+
+const people = document.getElementById("people");
+const days = document.getElementById("days");
+const startDay = document.getElementById("startDay");
+const firstMeal = document.getElementById("firstMeal");
+const lastMeal = document.getElementById("lastMeal");
+const mealOrder = ["breakfast","lunch","dinner"];
+const profile = document.getElementById("profile");
+const calories = document.getElementById("calories");
+const useWeight = document.getElementById("useWeight");
+const weightBox = document.getElementById("weightBox");
+const weight = document.getElementById("weight");
+const weightUnit = document.getElementById("weightUnit");
+const sport = document.getElementById("sport");
+const training = document.getElementById("training");
+const override = document.getElementById("override");
+const overrideBox = document.getElementById("overrideBox");
+const proteinOverride = document.getElementById("proteinOverride");
+const proteinBox = document.getElementById("proteinBox");
+const buffer = document.getElementById("buffer");
+const currency = document.getElementById("currency");
+const eventBudget = document.getElementById("eventBudget");
+const supplierName = document.getElementById("supplierName");
+const output = document.getElementById("output");
+const storageNote = document.getElementById("storageNote");
+
+const weekdayNames=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+function dayLabel(dayNum){
+ const start=Number(startDay.value);
+ const idx=(start + (dayNum-1)) % 7;
+ return weekdayNames[idx];
+}
+
+const profiles={
+ balanced:{cal:2000,sport:"daily"},
+ teen_hockey:{cal:3300,sport:"team"},
+ endurance:{cal:3100,sport:"endurance"},
+ ski:{cal:3000,sport:"ski"},
+ youth:{cal:2600,sport:"team"},
+ family:{cal:2100,sport:"daily"},
+ retreat:{cal:1800,sport:"daily"}
+};
+
+function applyProfile(){
+ const p=profiles[profile.value];
+ calories.value=p.cal;
+ sport.value=p.sport;
+ buffer.value="1";
+ generate(false);
+}
+function toggleWeight(){weightBox.hidden=!useWeight.checked;generate(false)}
+function toggleOverride(){overrideBox.hidden=!override.checked;generate(false)}
+function kg(){return weightUnit.value==="lb"?Number(weight.value)/2.20462:Number(weight.value)}
+let liveUpdateTimer=null;
+function liveUpdate(){
+ clearTimeout(liveUpdateTimer);
+ liveUpdateTimer=setTimeout(()=>generate(false),250);
+}
+function calcProtein(){
+ if(override.checked){
+   const amount=Number(proteinOverride.value)||100;
+   proteinBox.innerHTML="<strong>"+amount+" g protein/person/day</strong><p class='sub'>Daily protein amount override active.</p>";
+   return amount;
+ }
+ const activityBase={daily:75,endurance:100,team:110,ski:105,strength:120}[sport.value];
+ const activityAdj={rec:-10,regular:0,high:15}[training.value];
+ if(!useWeight.checked){
+   const target=Math.max(55,activityBase+activityAdj);
+   proteinBox.innerHTML="<strong>"+target+" g protein/person/day</strong><p class='sub'>Estimated from sport and activity level without body weight.</p>";
+   return target;
+ }
+ const base={daily:1.0,endurance:1.4,team:1.45,ski:1.4,strength:1.6}[sport.value];
+ const adj={rec:-.1,regular:0,high:.15}[training.value];
+ const factor=Math.max(.8,Math.min(2.0,base+adj));
+ const target=Math.round(kg()*factor);
+ proteinBox.innerHTML="<strong>"+target+" g protein/person/day</strong><p class='sub'>"+factor.toFixed(2)+" g/kg/day planning estimate.</p>";
+ return target;
+}
+
+const defaultUnits = {
+  "eggs":"each","rolled oats":"kg","Greek yogurt":"kg","blueberries":"kg","milk":"L","pumpkin seeds":"kg",
+  "pancake mix":"kg","banana":"each","maple syrup":"L","large tortilla":"each","black beans":"kg","cheddar":"kg",
+  "salsa":"kg","orange":"each","chicken breast":"kg","dry rice":"kg","broccoli":"kg","carrots":"kg","bell pepper":"kg",
+  "sesame dressing":"L","whole-grain bread":"slices","turkey breast":"kg","romaine":"kg","tomato":"kg","apple":"each",
+  "baby potatoes":"kg","Greek salad":"kg","roasted broccoli":"kg","olive oil":"L","lemon":"each","lean ground beef":"kg",
+  "dry penne":"kg","tomato sauce":"kg","mozzarella":"kg","Caesar salad":"kg","roasted carrots":"kg",
+  "fresh fruit salad":"kg","dinner roll":"each",
+  "deli ham":"kg","orange juice":"L","granola":"kg","cinnamon":"kg","parsley":"kg","quinoa":"kg","almonds":"kg",
+  "garlic":"kg","beef broth":"L","croutons":"kg","ranch dressing":"kg","butter":"kg","brownies":"kg",
+  "brown sugar":"kg","chocolate chip cookies":"kg","salt":"kg","cilantro":"kg","lime":"each","soy sauce":"L",
+  "Dijon mustard":"kg","rosemary":"kg","dried oregano":"kg","cucumber":"kg","feta":"kg",
+  "bacon":"kg","mixed berries":"kg","onion":"kg","mushrooms":"kg","sour cream":"kg","egg noodles":"kg",
+  "beef sirloin":"kg","salmon fillet":"kg","cod fillet":"kg","tilapia fillet":"kg","shrimp":"kg",
+  "breakfast sausage":"kg","smoked salmon":"kg","cream cheese":"kg","bagel":"each","croissant":"each",
+  "english muffin":"each","waffle mix":"kg","honey":"kg","hash browns":"kg","corn tortilla":"each",
+  "coleslaw":"kg","corn on the cob":"each","bbq sauce":"kg","buffalo sauce":"kg","spaghetti":"kg",
+  "garlic bread":"each","pesto sauce":"kg","parmesan":"kg","ciabatta roll":"each","swiss cheese":"kg",
+  "cornbread":"each","ground turkey":"kg","avocado":"each","snap peas":"kg","pork loin":"kg",
+  "pork shoulder":"kg","pork chops":"kg","pork ribs":"kg","sweet potato":"kg","zucchini":"kg",
+  "horseradish sauce":"kg","cranberry sauce":"kg","split peas":"kg","hollandaise sauce":"kg",
+  "cherry tomatoes":"kg","breadcrumbs":"kg","sub roll":"each","whole-wheat wrap":"each",
+  "caesar dressing":"L","burger bun":"each","canned tuna":"kg","mayonnaise":"kg","chicken broth":"L",
+  "mashed potatoes":"kg","blueberry muffin":"each","cinnamon roll":"each","spinach":"kg",
+  "beef chuck roast":"kg","scalloped potatoes":"kg","baked ham":"kg","corn kernels":"kg",
+  "ginger":"kg","green beans":"kg",
+  "whole-grain toast":"slices","mixed green salad":"kg","peanut butter":"kg","whole-grain roll":"each",
+  "brie cheese":"kg"
+};
+
+// Generic gluten/dairy substitution maps — any ingredient found here in a recipe
+// triggers an automatic gluten-free / dairy-free swap option for that recipe.
+const glutenMap = {
+  "rolled oats":"gluten-free rolled oats","pancake mix":"gluten-free pancake mix","large tortilla":"gluten-free tortilla",
+  "whole-grain bread":"gluten-free bread","whole-grain toast":"gluten-free bread","whole-grain roll":"gluten-free roll",
+  "dinner roll":"gluten-free roll","dry penne":"gluten-free penne","spaghetti":"gluten-free spaghetti",
+  "egg noodles":"gluten-free noodles","croutons":"gluten-free croutons","chocolate chip cookies":"gluten-free cookies",
+  "brownies":"gluten-free brownies","bagel":"gluten-free bagel","croissant":"gluten-free croissant",
+  "english muffin":"gluten-free english muffin","waffle mix":"gluten-free waffle mix","garlic bread":"gluten-free garlic bread",
+  "cornbread":"gluten-free cornbread","ciabatta roll":"gluten-free roll","sub roll":"gluten-free sub roll",
+  "whole-wheat wrap":"gluten-free wrap","burger bun":"gluten-free bun","breadcrumbs":"gluten-free breadcrumbs",
+  "cinnamon roll":"gluten-free cinnamon roll","blueberry muffin":"gluten-free muffin"
+};
+const dairyMap = {
+  "milk":"plant-based milk","Greek yogurt":"dairy-free yogurt","cheddar":"dairy-free cheese",
+  "mozzarella":"dairy-free mozzarella","parmesan":"dairy-free parmesan","swiss cheese":"dairy-free cheese",
+  "feta":"dairy-free feta","butter":"dairy-free butter","cream cheese":"dairy-free cream cheese",
+  "sour cream":"dairy-free sour cream","ranch dressing":"dairy-free ranch dressing","hollandaise sauce":"dairy-free hollandaise sauce",
+  "caesar dressing":"dairy-free caesar dressing","brie cheese":"dairy-free brie-style cheese"
+};
+[glutenMap,dairyMap].forEach(map=>{
+  Object.entries(map).forEach(([orig,sub])=>{
+    if(sub && defaultUnits[orig] && !defaultUnits[sub]) defaultUnits[sub]=defaultUnits[orig];
+  });
+});
+
+let storageAvailable = true;
+try{
+  const testKey="__feedCrewTest__";
+  localStorage.setItem(testKey,"1");
+  localStorage.removeItem(testKey);
+}catch(e){
+  storageAvailable = false;
+}
+
+let ingredientPrices = {};
+Object.keys(defaultUnits).forEach(k=>{ ingredientPrices[k]={price:0,unit:defaultUnits[k],packQty:1,packTotal:0}; });
+
+if(storageAvailable){
+  try{
+    const saved = localStorage.getItem("feedCrewPrices");
+    if(saved){
+      const parsed = JSON.parse(saved);
+      Object.keys(parsed).forEach(k=>{
+        if(ingredientPrices[k]){
+          if(parsed[k].packQty>0 || parsed[k].packTotal>0){
+            ingredientPrices[k].packQty = parsed[k].packQty>0 ? parsed[k].packQty : 1;
+            ingredientPrices[k].packTotal = parsed[k].packTotal || 0;
+          }else if(parsed[k].price>0){
+            // migrate prices saved under the old per-unit-only format
+            ingredientPrices[k].packQty = 1;
+            ingredientPrices[k].packTotal = parsed[k].price;
+          }
+          ingredientPrices[k].price = ingredientPrices[k].packTotal / ingredientPrices[k].packQty;
+        }
+      });
+    }
+  }catch(e){}
+}
+
+let pricesEntered = Object.values(ingredientPrices).some(p=>p.price>0);
+
+function unitCost(item, qty, unit){
+  const p = ingredientPrices[item];
+  if(!p) return 0;
+  if(unit === "g" && p.unit === "kg") return (qty/1000)*p.price;
+  if(unit === "ml" && p.unit === "L") return (qty/1000)*p.price;
+  if((unit === "each" || unit === "slices") && p.unit === unit) return qty*p.price;
+  return 0;
+}
+
+function recipeCost(recipe){
+  return recipe.ing.reduce((sum,[name,qty,unit])=>sum+unitCost(name,qty,unit),0);
+}
+
+function currencySymbol(){
+  return {CAD:"C$",USD:"US$",EUR:"€"}[document.getElementById("currency").value] || "$";
+}
+
+function money(v){
+  return `${currencySymbol()}${Number(v).toFixed(2)}`;
+}
+
+function savePrices(){
+  if(storageAvailable){
+    try{
+      localStorage.setItem("feedCrewPrices", JSON.stringify(ingredientPrices));
+      localStorage.setItem("feedCrewSupplierName", supplierName.value || "Supplier");
+      storageNote.textContent = "Saved — these prices will load automatically next time you open this planner in this browser.";
+    }catch(e){
+      storageNote.textContent = "Prices could not be saved automatically this time. They'll stay for this session only.";
+    }
+  }else{
+    storageNote.textContent = "This browser doesn't allow saved prices to persist automatically, so prices will stay for this session only. Once the tool is live on its own site this will save normally.";
+  }
+}
+
+function updatePack(item,field,value){
+  if(!ingredientPrices[item]) return;
+  const v = Math.max(0, Number(value)||0);
+  if(field==="qty") ingredientPrices[item].packQty = v>0 ? v : 1;
+  if(field==="total") ingredientPrices[item].packTotal = v;
+  ingredientPrices[item].price = ingredientPrices[item].packTotal / ingredientPrices[item].packQty;
+  if(ingredientPrices[item].packTotal>0) pricesEntered = true;
+  liveUpdate();
+}
+
+function matchIngredient(text){
+  if(!text) return null;
+  const norm = String(text).toLowerCase().trim();
+  const keys = Object.keys(defaultUnits);
+  let found = keys.find(k=>norm===k.toLowerCase());
+  if(found) return found;
+  found = keys.find(k=> norm.includes(k.toLowerCase()) || k.toLowerCase().includes(norm));
+  return found || null;
+}
+
+async function scanReceipt(input){
+  const file = input.files && input.files[0];
+  if(!file) return;
+  const statusEl = document.getElementById("receiptStatus");
+  statusEl.textContent = "Reading receipt — this may take a few seconds...";
+  try{
+    const base64 = await new Promise((resolve,reject)=>{
+      const reader = new FileReader();
+      reader.onload = ()=>resolve(reader.result.split(",")[1]);
+      reader.onerror = ()=>reject(new Error("Could not read the image file."));
+      reader.readAsDataURL(file);
+    });
+    const mediaType = file.type || "image/jpeg";
+    const token = localStorage.getItem("ftc_access_token");
+    const response = await fetch("/.netlify/functions/scan-receipt", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, base64Image: base64, mediaType })
+    });
+    if(!response.ok){
+      const errBody = await response.json().catch(()=>({}));
+      throw new Error(errBody.error || ("Scanner request failed (status "+response.status+").") );
+    }
+    const data = await response.json();
+    const textBlock = (data.content||[]).find(b=>b.type==="text");
+    if(!textBlock) throw new Error("No readable response from the scanner.");
+    const cleaned = textBlock.text.replace(/```json|```/g,"").trim();
+    const items = JSON.parse(cleaned);
+    let matched = 0;
+    const unmatched = [];
+    items.forEach(it=>{
+      const key = matchIngredient(it.item);
+      if(key){
+        updatePack(key, "qty", it.quantity || 1);
+        updatePack(key, "total", it.totalPaid || 0);
+        matched++;
+      }else{
+        unmatched.push(it.item);
+      }
+    });
+    statusEl.textContent = `Matched ${matched} item${matched===1?"":"s"} to your grocery list.`
+      + (unmatched.length ? ` Couldn't match: ${unmatched.join(", ")} — enter those manually below.` : "");
+    generate(false);
+  }catch(err){
+    console.error(err);
+    statusEl.textContent = err.message && err.message.includes("Pro & Catering")
+      ? err.message
+      : "Couldn't read that receipt automatically — you can still enter prices manually below.";
+  }
+}
+
+
+function priceEditorTable(items){
+  const unique=[...new Set(items)].sort();
+  return `<table class="cost-table">
+    <thead><tr><th>Grocery item</th><th>Quantity needed</th><th>What you bought & paid</th><th>Estimated cost for this plan</th></tr></thead>
+    <tbody>${unique.map(item=>{
+      const p=ingredientPrices[item]||{price:0,unit:"kg",packQty:1,packTotal:0};
+      const groceryItem = currentGrocery[item];
+      const qtyText = groceryItem ? formatQty(groceryItem.q,groceryItem.u) : "";
+      const total = groceryItem ? unitCost(item,groceryItem.q,groceryItem.u) : 0;
+      const safeItem = item.replace(/'/g,"\\'");
+      return `<tr>
+        <td>${item}</td>
+        <td>${qtyText}</td>
+        <td>
+          Bought <input type="number" min="0" step="any" value="${p.packQty}" style="width:65px" onchange="updatePack('${safeItem}','qty',this.value)"> ${p.unit}
+          for $<input type="number" min="0" step="0.01" value="${p.packTotal}" style="width:75px" onchange="updatePack('${safeItem}','total',this.value)">
+          <div class="note">= ${money(p.price)} per ${p.unit}</div>
+        </td>
+        <td>${pricesEntered ? money(total) : "—"}</td>
+      </tr>`;
+    }).join("")}</tbody>
+  </table>`;
+}
+
+const recipesByDay = {
+ "1": {
+  "breakfast": [
+   {
+    "name": "French Toast with Bacon & Berries",
+    "tag": "Comfort",
+    "cal": 780,
+    "protein": 32,
+    "serving": "1 plate (~480 g)",
+    "ing": [
+     [
+      "whole-grain bread",
+      3,
+      "slices"
+     ],
+     [
+      "eggs",
+      2,
+      "each"
+     ],
+     [
+      "milk",
+      100,
+      "ml"
+     ],
+     [
+      "cinnamon",
+      1,
+      "g"
+     ],
+     [
+      "bacon",
+      40,
+      "g"
+     ],
+     [
+      "mixed berries",
+      80,
+      "g"
+     ],
+     [
+      "maple syrup",
+      20,
+      "ml"
+     ]
+    ],
+    "steps": [
+     "Whisk eggs with milk and cinnamon; dip bread slices and soak briefly on each side.",
+     "Cook bacon in a pan until crisp; set aside and cook the soaked bread in the same pan until golden on both sides.",
+     "Serve topped with berries and a drizzle of maple syrup alongside the bacon."
+    ],
+    "prep": 10,
+    "cook": 15
+   },
+   {
+    "name": "Veggie & Cheese Omelette with Toast",
+    "tag": "Fresh",
+    "cal": 620,
+    "protein": 34,
+    "serving": "1 plate (~380 g)",
+    "ing": [
+     [
+      "eggs",
+      3,
+      "each"
+     ],
+     [
+      "bell pepper",
+      40,
+      "g"
+     ],
+     [
+      "tomato",
+      40,
+      "g"
+     ],
+     [
+      "cheddar",
+      30,
+      "g"
+     ],
+     [
+      "whole-grain toast",
+      2,
+      "slices"
+     ],
+     [
+      "butter",
+      5,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Whisk the eggs and season with a pinch of salt.",
+     "Saute the bell pepper and tomato in butter until softened, then pour in the eggs and cook until nearly set.",
+     "Sprinkle with cheese, fold, and serve with buttered toast."
+    ],
+    "prep": 8,
+    "cook": 10
+   },
+   {
+    "name": "Breakfast Bagel with Cream Cheese & Smoked Salmon",
+    "tag": "Performance",
+    "cal": 560,
+    "protein": 30,
+    "serving": "1 bagel (~230 g)",
+    "ing": [
+     [
+      "bagel",
+      1,
+      "each"
+     ],
+     [
+      "cream cheese",
+      40,
+      "g"
+     ],
+     [
+      "smoked salmon",
+      60,
+      "g"
+     ],
+     [
+      "cucumber",
+      20,
+      "g"
+     ],
+     [
+      "lemon",
+      0.1,
+      "each"
+     ]
+    ],
+    "steps": [
+     "Toast the bagel until golden.",
+     "Spread with cream cheese and layer with smoked salmon and thin cucumber slices.",
+     "Finish with a squeeze of lemon and serve."
+    ],
+    "prep": 8,
+    "cook": 3
+   }
+  ],
+  "lunch": [
+   {
+    "name": "Grilled Chicken Caesar Wrap",
+    "tag": "Fast",
+    "cal": 720,
+    "protein": 48,
+    "serving": "1 wrap (~430 g)",
+    "ing": [
+     [
+      "whole-wheat wrap",
+      1,
+      "each"
+     ],
+     [
+      "chicken breast",
+      120,
+      "g"
+     ],
+     [
+      "romaine",
+      40,
+      "g"
+     ],
+     [
+      "parmesan",
+      15,
+      "g"
+     ],
+     [
+      "caesar dressing",
+      20,
+      "ml"
+     ]
+    ],
+    "steps": [
+     "Grill the chicken breast and slice thinly.",
+     "Toss romaine with parmesan and caesar dressing.",
+     "Fill the wrap with chicken and salad, roll tightly, and slice in half."
+    ],
+    "prep": 12,
+    "cook": 12
+   },
+   {
+    "name": "BBQ Pulled Pork Sandwich",
+    "tag": "Comfort",
+    "cal": 780,
+    "protein": 40,
+    "serving": "1 sandwich (~400 g)",
+    "ing": [
+     [
+      "pork shoulder",
+      150,
+      "g"
+     ],
+     [
+      "bbq sauce",
+      40,
+      "g"
+     ],
+     [
+      "burger bun",
+      1,
+      "each"
+     ],
+     [
+      "coleslaw",
+      60,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Slow-cook the pork shoulder until tender, then shred with two forks.",
+     "Toss the shredded pork with bbq sauce.",
+     "Pile onto a bun and top with coleslaw."
+    ],
+    "prep": 10,
+    "cook": 180
+   },
+   {
+    "name": "Tuna Salad Sandwich",
+    "tag": "Fresh",
+    "cal": 650,
+    "protein": 38,
+    "serving": "1 sandwich (~380 g)",
+    "ing": [
+     [
+      "canned tuna",
+      100,
+      "g"
+     ],
+     [
+      "mayonnaise",
+      20,
+      "g"
+     ],
+     [
+      "whole-grain bread",
+      2,
+      "slices"
+     ],
+     [
+      "romaine",
+      20,
+      "g"
+     ],
+     [
+      "tomato",
+      30,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Mix the tuna with mayonnaise and season to taste.",
+     "Layer lettuce and tomato on the bread and top with the tuna mixture.",
+     "Close the sandwich and slice in half."
+    ],
+    "prep": 10,
+    "cook": 0
+   }
+  ],
+  "dinner": [
+   {
+    "name": "Baked Salmon with Rice & Green Beans",
+    "tag": "Performance",
+    "cal": 940,
+    "protein": 58,
+    "serving": "1 plate (~700 g)",
+    "ing": [
+     [
+      "salmon fillet",
+      200,
+      "g"
+     ],
+     [
+      "dry rice",
+      90,
+      "g"
+     ],
+     [
+      "green beans",
+      100,
+      "g"
+     ],
+     [
+      "carrots",
+      80,
+      "g"
+     ],
+     [
+      "olive oil",
+      15,
+      "ml"
+     ],
+     [
+      "lemon",
+      0.25,
+      "each"
+     ],
+     [
+      "salt",
+      1,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Season the salmon with olive oil, lemon juice and salt, then bake until it flakes easily.",
+     "Cook the rice according to package directions.",
+     "Steam the green beans and carrots until crisp-tender, then plate everything together."
+    ],
+    "prep": 15,
+    "cook": 25,
+    "dinnerStructure": {
+     "protein": "salmon fillet",
+     "starch": "dry rice",
+     "vegetables": [
+      "green beans",
+      "carrots"
+     ]
+    }
+   },
+   {
+    "name": "Roast Pork Loin with Mashed Potatoes & Coleslaw",
+    "tag": "Comfort",
+    "cal": 1020,
+    "protein": 56,
+    "serving": "1 plate (~780 g)",
+    "ing": [
+     [
+      "pork loin",
+      200,
+      "g"
+     ],
+     [
+      "mashed potatoes",
+      220,
+      "g"
+     ],
+     [
+      "coleslaw",
+      120,
+      "g"
+     ],
+     [
+      "green beans",
+      100,
+      "g"
+     ],
+     [
+      "olive oil",
+      10,
+      "ml"
+     ],
+     [
+      "dried oregano",
+      2,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Season the pork loin and roast until fully cooked, then rest before slicing.",
+     "Prepare or warm the mashed potatoes.",
+     "Plate with coleslaw and steamed green beans."
+    ],
+    "prep": 15,
+    "cook": 40,
+    "dinnerStructure": {
+     "protein": "pork loin",
+     "starch": "mashed potatoes",
+     "salad": "coleslaw",
+     "vegetables": [
+      "green beans"
+     ]
+    }
+   },
+   {
+    "name": "Turkey Meatballs with Spaghetti & Garden Salad",
+    "tag": "Fresh",
+    "cal": 890,
+    "protein": 50,
+    "serving": "1 plate (~750 g)",
+    "ing": [
+     [
+      "ground turkey",
+      180,
+      "g"
+     ],
+     [
+      "breadcrumbs",
+      20,
+      "g"
+     ],
+     [
+      "eggs",
+      0.5,
+      "each"
+     ],
+     [
+      "spaghetti",
+      100,
+      "g"
+     ],
+     [
+      "tomato sauce",
+      150,
+      "g"
+     ],
+     [
+      "mixed green salad",
+      150,
+      "g"
+     ],
+     [
+      "zucchini",
+      100,
+      "g"
+     ],
+     [
+      "garlic",
+      5,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Mix ground turkey with breadcrumbs, egg and minced garlic, then form into meatballs and bake or pan-sear until cooked through.",
+     "Cook the spaghetti and warm the tomato sauce with the meatballs.",
+     "Serve with a mixed green salad and sauteed zucchini."
+    ],
+    "prep": 20,
+    "cook": 30,
+    "dinnerStructure": {
+     "protein": "ground turkey",
+     "starch": "spaghetti",
+     "salad": "mixed green salad",
+     "vegetables": [
+      "zucchini"
+     ]
+    }
+   }
+  ]
+ },
+ "2": {
+  "breakfast": [
+   {
+    "name": "Toasted Ham & Swiss Croissant with Dijon",
+    "tag": "Comfort",
+    "cal": 600,
+    "protein": 26,
+    "serving": "1 croissant + fruit (~300 g)",
+    "ing": [
+     [
+      "croissant",
+      1,
+      "each"
+     ],
+     [
+      "deli ham",
+      60,
+      "g"
+     ],
+     [
+      "swiss cheese",
+      35,
+      "g"
+     ],
+     [
+      "Dijon mustard",
+      8,
+      "g"
+     ],
+     [
+      "butter",
+      5,
+      "g"
+     ],
+     [
+      "fresh fruit salad",
+      100,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Split the croissant and spread the inside lightly with Dijon mustard.",
+     "Layer in the ham and cheese, then butter the outside and toast in a pan or press until the cheese melts and the crust crisps.",
+     "Slice in half and serve warm with a side of fresh fruit."
+    ],
+    "prep": 6,
+    "cook": 8
+   },
+   {
+    "name": "Greek Yogurt Parfait with Granola & Honey",
+    "tag": "Fresh",
+    "cal": 480,
+    "protein": 28,
+    "serving": "1 parfait (~280 g)",
+    "ing": [
+     [
+      "Greek yogurt",
+      180,
+      "g"
+     ],
+     [
+      "granola",
+      40,
+      "g"
+     ],
+     [
+      "blueberries",
+      60,
+      "g"
+     ],
+     [
+      "honey",
+      15,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Layer yogurt, granola and blueberries in a cup.",
+     "Drizzle with honey just before serving."
+    ],
+    "prep": 6,
+    "cook": 0
+   },
+   {
+    "name": "Sausage, Egg & Cheese Muffin",
+    "tag": "Portable",
+    "cal": 620,
+    "protein": 34,
+    "serving": "1 muffin (~260 g)",
+    "ing": [
+     [
+      "english muffin",
+      1,
+      "each"
+     ],
+     [
+      "breakfast sausage",
+      60,
+      "g"
+     ],
+     [
+      "eggs",
+      1,
+      "each"
+     ],
+     [
+      "cheddar",
+      20,
+      "g"
+     ],
+     [
+      "butter",
+      5,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Toast the english muffin.",
+     "Cook the sausage patty and fry the egg to preference.",
+     "Assemble with cheese between the muffin halves."
+    ],
+    "prep": 8,
+    "cook": 12
+   }
+  ],
+  "lunch": [
+   {
+    "name": "Chicken Caesar Salad Bowl",
+    "tag": "Performance",
+    "cal": 680,
+    "protein": 52,
+    "serving": "1 bowl (~480 g)",
+    "ing": [
+     [
+      "chicken breast",
+      160,
+      "g"
+     ],
+     [
+      "romaine",
+      100,
+      "g"
+     ],
+     [
+      "parmesan",
+      20,
+      "g"
+     ],
+     [
+      "caesar dressing",
+      25,
+      "ml"
+     ],
+     [
+      "croutons",
+      20,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Grill the chicken breast and slice.",
+     "Toss romaine with parmesan, croutons and dressing.",
+     "Top with the sliced chicken."
+    ],
+    "prep": 12,
+    "cook": 12
+   },
+   {
+    "name": "Ham & Swiss Panini",
+    "tag": "Comfort",
+    "cal": 700,
+    "protein": 38,
+    "serving": "1 panini (~350 g)",
+    "ing": [
+     [
+      "ciabatta roll",
+      1,
+      "each"
+     ],
+     [
+      "deli ham",
+      100,
+      "g"
+     ],
+     [
+      "swiss cheese",
+      40,
+      "g"
+     ],
+     [
+      "Dijon mustard",
+      10,
+      "g"
+     ],
+     [
+      "butter",
+      8,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Spread mustard on the ciabatta and layer with ham and cheese.",
+     "Butter the outside and grill in a press until golden and the cheese melts."
+    ],
+    "prep": 8,
+    "cook": 8
+   },
+   {
+    "name": "Beef Chili with Cornbread",
+    "tag": "Warm",
+    "cal": 760,
+    "protein": 44,
+    "serving": "1 bowl + cornbread (~500 g)",
+    "ing": [
+     [
+      "lean ground beef",
+      150,
+      "g"
+     ],
+     [
+      "black beans",
+      100,
+      "g"
+     ],
+     [
+      "tomato sauce",
+      150,
+      "g"
+     ],
+     [
+      "bell pepper",
+      50,
+      "g"
+     ],
+     [
+      "onion",
+      40,
+      "g"
+     ],
+     [
+      "cornbread",
+      1,
+      "each"
+     ]
+    ],
+    "steps": [
+     "Brown the beef with onion and bell pepper.",
+     "Stir in beans and tomato sauce and simmer 15 minutes.",
+     "Serve hot with a piece of cornbread."
+    ],
+    "prep": 12,
+    "cook": 25
+   }
+  ],
+  "dinner": [
+   {
+    "name": "Grilled Steak with Baked Potato & Broccoli",
+    "tag": "Performance",
+    "cal": 1000,
+    "protein": 60,
+    "serving": "1 plate (~750 g)",
+    "ing": [
+     [
+      "beef sirloin",
+      220,
+      "g"
+     ],
+     [
+      "baby potatoes",
+      250,
+      "g"
+     ],
+     [
+      "broccoli",
+      100,
+      "g"
+     ],
+     [
+      "carrots",
+      80,
+      "g"
+     ],
+     [
+      "butter",
+      10,
+      "g"
+     ],
+     [
+      "salt",
+      1,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Season the steak and grill to desired doneness, then rest before slicing.",
+     "Bake the potatoes until tender.",
+     "Steam the broccoli and carrots and plate with butter."
+    ],
+    "prep": 15,
+    "cook": 30,
+    "dinnerStructure": {
+     "protein": "beef sirloin",
+     "starch": "baby potatoes",
+     "vegetables": [
+      "broccoli",
+      "carrots"
+     ]
+    }
+   },
+   {
+    "name": "Chicken Stir-Fry with Rice & Snap Peas",
+    "tag": "Fresh",
+    "cal": 880,
+    "protein": 54,
+    "serving": "1 plate (~650 g)",
+    "ing": [
+     [
+      "chicken breast",
+      180,
+      "g"
+     ],
+     [
+      "dry rice",
+      90,
+      "g"
+     ],
+     [
+      "snap peas",
+      90,
+      "g"
+     ],
+     [
+      "bell pepper",
+      60,
+      "g"
+     ],
+     [
+      "soy sauce",
+      15,
+      "ml"
+     ],
+     [
+      "ginger",
+      5,
+      "g"
+     ],
+     [
+      "garlic",
+      5,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Cook the rice according to package directions.",
+     "Stir-fry the chicken with garlic and ginger until cooked through.",
+     "Add the vegetables and soy sauce, stir-fry until crisp-tender, and serve over rice."
+    ],
+    "prep": 15,
+    "cook": 20,
+    "dinnerStructure": {
+     "protein": "chicken breast",
+     "starch": "dry rice",
+     "vegetables": [
+      "snap peas",
+      "bell pepper"
+     ]
+    }
+   },
+   {
+    "name": "Baked Cod with Quinoa & Roasted Vegetables",
+    "tag": "Fresh",
+    "cal": 820,
+    "protein": 52,
+    "serving": "1 plate (~680 g)",
+    "ing": [
+     [
+      "cod fillet",
+      200,
+      "g"
+     ],
+     [
+      "quinoa",
+      80,
+      "g"
+     ],
+     [
+      "zucchini",
+      90,
+      "g"
+     ],
+     [
+      "carrots",
+      80,
+      "g"
+     ],
+     [
+      "olive oil",
+      12,
+      "ml"
+     ],
+     [
+      "lemon",
+      0.25,
+      "each"
+     ]
+    ],
+    "steps": [
+     "Season the cod and bake until it flakes easily.",
+     "Cook the quinoa according to package directions.",
+     "Roast the zucchini and carrots with olive oil, then plate everything with a squeeze of lemon."
+    ],
+    "prep": 12,
+    "cook": 25,
+    "dinnerStructure": {
+     "protein": "cod fillet",
+     "starch": "quinoa",
+     "vegetables": [
+      "zucchini",
+      "carrots"
+     ]
+    }
+   }
+  ]
+ },
+ "3": {
+  "breakfast": [
+   {
+    "name": "Breakfast Quesadilla with Salsa",
+    "tag": "Portable",
+    "cal": 680,
+    "protein": 34,
+    "serving": "1 quesadilla (~320 g)",
+    "ing": [
+     [
+      "large tortilla",
+      1,
+      "each"
+     ],
+     [
+      "eggs",
+      2,
+      "each"
+     ],
+     [
+      "cheddar",
+      40,
+      "g"
+     ],
+     [
+      "black beans",
+      60,
+      "g"
+     ],
+     [
+      "salsa",
+      40,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Scramble the eggs and mix with beans.",
+     "Fill the tortilla with egg mixture and cheese, fold and cook in a pan until golden and the cheese melts.",
+     "Slice into wedges and serve with salsa."
+    ],
+    "prep": 10,
+    "cook": 10
+   },
+   {
+    "name": "Overnight Oats with Peanut Butter & Banana",
+    "tag": "Fresh",
+    "cal": 560,
+    "protein": 24,
+    "serving": "1 jar (~350 g)",
+    "ing": [
+     [
+      "rolled oats",
+      70,
+      "g"
+     ],
+     [
+      "milk",
+      180,
+      "ml"
+     ],
+     [
+      "peanut butter",
+      25,
+      "g"
+     ],
+     [
+      "banana",
+      1,
+      "each"
+     ]
+    ],
+    "steps": [
+     "Combine oats and milk in a jar and refrigerate overnight.",
+     "Stir in peanut butter and top with sliced banana before serving."
+    ],
+    "prep": 5,
+    "cook": 0
+   },
+   {
+    "name": "Western Omelette with Hash Browns",
+    "tag": "Hearty",
+    "cal": 700,
+    "protein": 36,
+    "serving": "1 plate (~420 g)",
+    "ing": [
+     [
+      "eggs",
+      3,
+      "each"
+     ],
+     [
+      "deli ham",
+      50,
+      "g"
+     ],
+     [
+      "bell pepper",
+      30,
+      "g"
+     ],
+     [
+      "onion",
+      20,
+      "g"
+     ],
+     [
+      "cheddar",
+      25,
+      "g"
+     ],
+     [
+      "hash browns",
+      150,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Saute the ham, pepper and onion until softened.",
+     "Pour in whisked eggs and cook until nearly set, then sprinkle with cheese and fold.",
+     "Serve with pan-fried hash browns."
+    ],
+    "prep": 12,
+    "cook": 15
+   }
+  ],
+  "lunch": [
+   {
+    "name": "Turkey Club Sandwich",
+    "tag": "Fast",
+    "cal": 720,
+    "protein": 44,
+    "serving": "1 sandwich (~420 g)",
+    "ing": [
+     [
+      "whole-grain bread",
+      3,
+      "slices"
+     ],
+     [
+      "turkey breast",
+      100,
+      "g"
+     ],
+     [
+      "bacon",
+      30,
+      "g"
+     ],
+     [
+      "romaine",
+      20,
+      "g"
+     ],
+     [
+      "tomato",
+      40,
+      "g"
+     ],
+     [
+      "mayonnaise",
+      15,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Toast the bread.",
+     "Layer turkey, bacon, lettuce and tomato with a spread of mayonnaise.",
+     "Stack, secure and slice diagonally."
+    ],
+    "prep": 12,
+    "cook": 5
+   },
+   {
+    "name": "Chicken Noodle Soup with Roll",
+    "tag": "Warm",
+    "cal": 620,
+    "protein": 36,
+    "serving": "1 bowl + roll (~480 g)",
+    "ing": [
+     [
+      "chicken breast",
+      100,
+      "g"
+     ],
+     [
+      "egg noodles",
+      60,
+      "g"
+     ],
+     [
+      "carrots",
+      50,
+      "g"
+     ],
+     [
+      "chicken broth",
+      300,
+      "ml"
+     ],
+     [
+      "whole-grain roll",
+      1,
+      "each"
+     ]
+    ],
+    "steps": [
+     "Poach the chicken in broth until cooked through, then shred.",
+     "Add noodles and carrots and simmer until tender.",
+     "Serve hot with a roll."
+    ],
+    "prep": 10,
+    "cook": 20
+   },
+   {
+    "name": "Buffalo Chicken Wrap",
+    "tag": "Spicy",
+    "cal": 700,
+    "protein": 46,
+    "serving": "1 wrap (~400 g)",
+    "ing": [
+     [
+      "whole-wheat wrap",
+      1,
+      "each"
+     ],
+     [
+      "chicken breast",
+      140,
+      "g"
+     ],
+     [
+      "buffalo sauce",
+      30,
+      "g"
+     ],
+     [
+      "romaine",
+      30,
+      "g"
+     ],
+     [
+      "ranch dressing",
+      20,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Toss cooked, sliced chicken with buffalo sauce.",
+     "Fill the wrap with chicken, lettuce and a drizzle of ranch.",
+     "Roll tightly and slice in half."
+    ],
+    "prep": 12,
+    "cook": 12
+   }
+  ],
+  "dinner": [
+   {
+    "name": "Herb Roasted Chicken with Rice Pilaf & Green Beans",
+    "tag": "Performance",
+    "cal": 950,
+    "protein": 60,
+    "serving": "1 plate (~760 g)",
+    "ing": [
+     [
+      "chicken breast",
+      220,
+      "g"
+     ],
+     [
+      "dry rice",
+      90,
+      "g"
+     ],
+     [
+      "green beans",
+      100,
+      "g"
+     ],
+     [
+      "carrots",
+      80,
+      "g"
+     ],
+     [
+      "olive oil",
+      15,
+      "ml"
+     ],
+     [
+      "rosemary",
+      3,
+      "g"
+     ],
+     [
+      "garlic",
+      5,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Rub the chicken with olive oil, garlic and rosemary, then roast until fully cooked.",
+     "Cook the rice pilaf-style with a little sauteed onion if available.",
+     "Steam the green beans and carrots and plate with the chicken."
+    ],
+    "prep": 15,
+    "cook": 35,
+    "dinnerStructure": {
+     "protein": "chicken breast",
+     "starch": "dry rice",
+     "vegetables": [
+      "green beans",
+      "carrots"
+     ]
+    }
+   },
+   {
+    "name": "Beef Stroganoff with Egg Noodles & Side Salad",
+    "tag": "Comfort",
+    "cal": 1000,
+    "protein": 52,
+    "serving": "1 plate (~720 g)",
+    "ing": [
+     [
+      "beef sirloin",
+      180,
+      "g"
+     ],
+     [
+      "mushrooms",
+      80,
+      "g"
+     ],
+     [
+      "onion",
+      40,
+      "g"
+     ],
+     [
+      "sour cream",
+      40,
+      "g"
+     ],
+     [
+      "egg noodles",
+      100,
+      "g"
+     ],
+     [
+      "mixed green salad",
+      120,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Saute the beef, mushrooms and onion until browned.",
+     "Stir in sour cream to make a creamy sauce.",
+     "Serve over egg noodles with a side salad."
+    ],
+    "prep": 15,
+    "cook": 25,
+    "dinnerStructure": {
+     "protein": "beef sirloin",
+     "starch": "egg noodles",
+     "salad": "mixed green salad",
+     "vegetables": [
+      "mushrooms"
+     ]
+    }
+   },
+   {
+    "name": "Shrimp Pasta with Garlic Bread & Steamed Broccoli",
+    "tag": "Fresh",
+    "cal": 880,
+    "protein": 48,
+    "serving": "1 plate (~700 g)",
+    "ing": [
+     [
+      "shrimp",
+      180,
+      "g"
+     ],
+     [
+      "dry penne",
+      100,
+      "g"
+     ],
+     [
+      "tomato",
+      80,
+      "g"
+     ],
+     [
+      "garlic",
+      6,
+      "g"
+     ],
+     [
+      "olive oil",
+      15,
+      "ml"
+     ],
+     [
+      "garlic bread",
+      1,
+      "each"
+     ],
+     [
+      "broccoli",
+      100,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Cook the pasta according to package directions.",
+     "Saute the shrimp with garlic and olive oil until pink and cooked through, then toss with diced tomato and the pasta.",
+     "Steam the broccoli and serve alongside with garlic bread."
+    ],
+    "prep": 15,
+    "cook": 20,
+    "dinnerStructure": {
+     "protein": "shrimp",
+     "starch": "dry penne",
+     "vegetables": [
+      "broccoli",
+      "tomato"
+     ]
+    }
+   }
+  ]
+ },
+ "4": {
+  "breakfast": [
+   {
+    "name": "Baked Blueberry Oatmeal with Scrambled Eggs",
+    "tag": "Comfort",
+    "cal": 660,
+    "protein": 30,
+    "serving": "1 portion + eggs (~380 g)",
+    "ing": [
+     [
+      "rolled oats",
+      90,
+      "g"
+     ],
+     [
+      "blueberries",
+      60,
+      "g"
+     ],
+     [
+      "milk",
+      120,
+      "ml"
+     ],
+     [
+      "eggs",
+      3,
+      "each"
+     ],
+     [
+      "cinnamon",
+      2,
+      "g"
+     ],
+     [
+      "brown sugar",
+      10,
+      "g"
+     ],
+     [
+      "butter",
+      5,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Mix the oats with milk, one beaten egg, cinnamon and brown sugar, fold in the blueberries and pour into a greased baking dish.",
+     "Bake until set and lightly golden on top, then slice into portions.",
+     "Scramble the remaining eggs in butter and serve alongside."
+    ],
+    "prep": 10,
+    "cook": 25
+   },
+   {
+    "name": "Breakfast Burrito Bowl",
+    "tag": "Portable",
+    "cal": 700,
+    "protein": 36,
+    "serving": "1 bowl (~480 g)",
+    "ing": [
+     [
+      "dry rice",
+      60,
+      "g"
+     ],
+     [
+      "black beans",
+      80,
+      "g"
+     ],
+     [
+      "eggs",
+      2,
+      "each"
+     ],
+     [
+      "cheddar",
+      30,
+      "g"
+     ],
+     [
+      "salsa",
+      40,
+      "g"
+     ],
+     [
+      "cilantro",
+      5,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Cook the rice and warm the beans.",
+     "Scramble the eggs.",
+     "Assemble in a bowl with cheese, salsa and cilantro."
+    ],
+    "prep": 10,
+    "cook": 15
+   },
+   {
+    "name": "Waffles with Sausage & Maple Syrup",
+    "tag": "Comfort",
+    "cal": 760,
+    "protein": 30,
+    "serving": "1 plate (~460 g)",
+    "ing": [
+     [
+      "waffle mix",
+      100,
+      "g"
+     ],
+     [
+      "eggs",
+      1,
+      "each"
+     ],
+     [
+      "milk",
+      150,
+      "ml"
+     ],
+     [
+      "breakfast sausage",
+      60,
+      "g"
+     ],
+     [
+      "maple syrup",
+      25,
+      "ml"
+     ]
+    ],
+    "steps": [
+     "Mix the waffle batter with egg and milk and cook in a waffle iron until golden.",
+     "Cook the sausage links until browned.",
+     "Serve together with maple syrup."
+    ],
+    "prep": 10,
+    "cook": 15
+   }
+  ],
+  "lunch": [
+   {
+    "name": "Philly Cheesesteak Sandwich",
+    "tag": "Hearty",
+    "cal": 780,
+    "protein": 46,
+    "serving": "1 sandwich (~420 g)",
+    "ing": [
+     [
+      "beef sirloin",
+      150,
+      "g"
+     ],
+     [
+      "onion",
+      40,
+      "g"
+     ],
+     [
+      "bell pepper",
+      40,
+      "g"
+     ],
+     [
+      "swiss cheese",
+      30,
+      "g"
+     ],
+     [
+      "sub roll",
+      1,
+      "each"
+     ]
+    ],
+    "steps": [
+     "Thinly slice and cook the beef with onion and pepper until browned.",
+     "Top with cheese until melted.",
+     "Pile into the sub roll and serve."
+    ],
+    "prep": 12,
+    "cook": 15
+   },
+   {
+    "name": "Cobb Salad with Grilled Chicken",
+    "tag": "Fresh",
+    "cal": 700,
+    "protein": 50,
+    "serving": "1 bowl (~480 g)",
+    "ing": [
+     [
+      "chicken breast",
+      140,
+      "g"
+     ],
+     [
+      "romaine",
+      100,
+      "g"
+     ],
+     [
+      "tomato",
+      50,
+      "g"
+     ],
+     [
+      "bacon",
+      20,
+      "g"
+     ],
+     [
+      "cheddar",
+      25,
+      "g"
+     ],
+     [
+      "avocado",
+      0.5,
+      "each"
+     ]
+    ],
+    "steps": [
+     "Grill the chicken and slice.",
+     "Arrange romaine, tomato, bacon, cheese and avocado in rows over the greens.",
+     "Top with the sliced chicken."
+    ],
+    "prep": 15,
+    "cook": 12
+   },
+   {
+    "name": "Turkey & Avocado Wrap",
+    "tag": "Fresh",
+    "cal": 650,
+    "protein": 36,
+    "serving": "1 wrap (~380 g)",
+    "ing": [
+     [
+      "whole-wheat wrap",
+      1,
+      "each"
+     ],
+     [
+      "turkey breast",
+      100,
+      "g"
+     ],
+     [
+      "avocado",
+      0.5,
+      "each"
+     ],
+     [
+      "romaine",
+      20,
+      "g"
+     ],
+     [
+      "tomato",
+      30,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Mash or slice the avocado.",
+     "Layer turkey, avocado, lettuce and tomato on the wrap.",
+     "Roll tightly and slice in half."
+    ],
+    "prep": 10,
+    "cook": 0
+   }
+  ],
+  "dinner": [
+   {
+    "name": "BBQ Chicken with Corn on the Cob & Coleslaw",
+    "tag": "Performance",
+    "cal": 920,
+    "protein": 58,
+    "serving": "1 plate (~700 g)",
+    "ing": [
+     [
+      "chicken breast",
+      220,
+      "g"
+     ],
+     [
+      "bbq sauce",
+      30,
+      "g"
+     ],
+     [
+      "corn on the cob",
+      1,
+      "each"
+     ],
+     [
+      "coleslaw",
+      120,
+      "g"
+     ],
+     [
+      "carrots",
+      70,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Grill or bake the chicken, brushing with bbq sauce until fully cooked.",
+     "Boil or grill the corn on the cob.",
+     "Serve with coleslaw and steamed carrots."
+    ],
+    "prep": 12,
+    "cook": 30,
+    "dinnerStructure": {
+     "protein": "chicken breast",
+     "starch": "corn on the cob",
+     "salad": "coleslaw",
+     "vegetables": [
+      "carrots"
+     ]
+    }
+   },
+   {
+    "name": "Meatloaf with Mashed Potatoes & Green Beans",
+    "tag": "Comfort",
+    "cal": 980,
+    "protein": 52,
+    "serving": "1 plate (~740 g)",
+    "ing": [
+     [
+      "lean ground beef",
+      200,
+      "g"
+     ],
+     [
+      "breadcrumbs",
+      25,
+      "g"
+     ],
+     [
+      "eggs",
+      0.5,
+      "each"
+     ],
+     [
+      "onion",
+      30,
+      "g"
+     ],
+     [
+      "mashed potatoes",
+      220,
+      "g"
+     ],
+     [
+      "green beans",
+      100,
+      "g"
+     ],
+     [
+      "carrots",
+      70,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Mix the beef with breadcrumbs, egg and onion, shape into a loaf and bake until fully cooked.",
+     "Prepare or warm the mashed potatoes.",
+     "Steam the green beans and carrots and plate with the meatloaf."
+    ],
+    "prep": 15,
+    "cook": 45,
+    "dinnerStructure": {
+     "protein": "lean ground beef",
+     "starch": "mashed potatoes",
+     "vegetables": [
+      "green beans",
+      "carrots"
+     ]
+    }
+   },
+   {
+    "name": "Baked Tilapia with Rice & Steamed Vegetables",
+    "tag": "Fresh",
+    "cal": 840,
+    "protein": 50,
+    "serving": "1 plate (~680 g)",
+    "ing": [
+     [
+      "tilapia fillet",
+      200,
+      "g"
+     ],
+     [
+      "dry rice",
+      90,
+      "g"
+     ],
+     [
+      "broccoli",
+      90,
+      "g"
+     ],
+     [
+      "carrots",
+      70,
+      "g"
+     ],
+     [
+      "olive oil",
+      12,
+      "ml"
+     ],
+     [
+      "lemon",
+      0.25,
+      "each"
+     ]
+    ],
+    "steps": [
+     "Season the tilapia and bake until it flakes easily.",
+     "Cook the rice according to package directions.",
+     "Steam the broccoli and carrots and plate with a squeeze of lemon."
+    ],
+    "prep": 12,
+    "cook": 22,
+    "dinnerStructure": {
+     "protein": "tilapia fillet",
+     "starch": "dry rice",
+     "vegetables": [
+      "broccoli",
+      "carrots"
+     ]
+    }
+   }
+  ]
+ },
+ "5": {
+  "breakfast": [
+   {
+    "name": "Cinnamon Roll Bake with Sauteed Apples & Sausage",
+    "tag": "Comfort",
+    "cal": 760,
+    "protein": 28,
+    "serving": "1 plate (~400 g)",
+    "ing": [
+     [
+      "cinnamon roll",
+      1,
+      "each"
+     ],
+     [
+      "apple",
+      0.5,
+      "each"
+     ],
+     [
+      "butter",
+      8,
+      "g"
+     ],
+     [
+      "cinnamon",
+      1,
+      "g"
+     ],
+     [
+      "breakfast sausage",
+      70,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Slice the apple and saute in butter with a pinch of cinnamon until softened and lightly caramelized.",
+     "Warm the cinnamon roll until the glaze softens.",
+     "Cook the sausage links until browned and serve everything together, spooning the apples over the roll."
+    ],
+    "prep": 8,
+    "cook": 15
+   },
+   {
+    "name": "Egg White Veggie Wrap",
+    "tag": "Fresh",
+    "cal": 480,
+    "protein": 30,
+    "serving": "1 wrap (~320 g)",
+    "ing": [
+     [
+      "whole-wheat wrap",
+      1,
+      "each"
+     ],
+     [
+      "eggs",
+      3,
+      "each"
+     ],
+     [
+      "bell pepper",
+      30,
+      "g"
+     ],
+     [
+      "spinach",
+      30,
+      "g"
+     ],
+     [
+      "cheddar",
+      20,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Whisk the eggs and scramble with bell pepper and spinach until just set.",
+     "Sprinkle with a little cheese.",
+     "Fill the wrap, roll tightly and slice."
+    ],
+    "prep": 8,
+    "cook": 10
+   },
+   {
+    "name": "Loaded Peanut Butter Banana Bagel",
+    "tag": "Portable",
+    "cal": 620,
+    "protein": 24,
+    "serving": "1 bagel (~300 g)",
+    "ing": [
+     [
+      "bagel",
+      1,
+      "each"
+     ],
+     [
+      "peanut butter",
+      30,
+      "g"
+     ],
+     [
+      "banana",
+      1,
+      "each"
+     ],
+     [
+      "granola",
+      20,
+      "g"
+     ],
+     [
+      "honey",
+      10,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Toast the bagel until golden.",
+     "Spread with peanut butter and top with sliced banana.",
+     "Sprinkle with granola and finish with a drizzle of honey."
+    ],
+    "prep": 6,
+    "cook": 3
+   }
+  ],
+  "lunch": [
+   {
+    "name": "Fish Tacos with Slaw",
+    "tag": "Fresh",
+    "cal": 680,
+    "protein": 38,
+    "serving": "2 tacos (~380 g)",
+    "ing": [
+     [
+      "tilapia fillet",
+      150,
+      "g"
+     ],
+     [
+      "corn tortilla",
+      2,
+      "each"
+     ],
+     [
+      "coleslaw",
+      80,
+      "g"
+     ],
+     [
+      "lime",
+      0.5,
+      "each"
+     ],
+     [
+      "cilantro",
+      5,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Season and pan-sear the fish until cooked through, then flake.",
+     "Warm the tortillas.",
+     "Fill with fish and slaw, and finish with lime and cilantro."
+    ],
+    "prep": 12,
+    "cook": 12
+   },
+   {
+    "name": "Chicken Pesto Pasta Salad",
+    "tag": "Fresh",
+    "cal": 720,
+    "protein": 44,
+    "serving": "1 bowl (~450 g)",
+    "ing": [
+     [
+      "dry penne",
+      90,
+      "g"
+     ],
+     [
+      "chicken breast",
+      130,
+      "g"
+     ],
+     [
+      "pesto sauce",
+      30,
+      "g"
+     ],
+     [
+      "cherry tomatoes",
+      60,
+      "g"
+     ],
+     [
+      "parmesan",
+      15,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Cook the pasta and let it cool slightly.",
+     "Grill and slice the chicken.",
+     "Toss the pasta with pesto, chicken, cherry tomatoes and parmesan."
+    ],
+    "prep": 15,
+    "cook": 15
+   },
+   {
+    "name": "Meatball Sub",
+    "tag": "Hearty",
+    "cal": 800,
+    "protein": 42,
+    "serving": "1 sub (~420 g)",
+    "ing": [
+     [
+      "ground turkey",
+      150,
+      "g"
+     ],
+     [
+      "breadcrumbs",
+      20,
+      "g"
+     ],
+     [
+      "eggs",
+      0.5,
+      "each"
+     ],
+     [
+      "tomato sauce",
+      100,
+      "g"
+     ],
+     [
+      "mozzarella",
+      30,
+      "g"
+     ],
+     [
+      "sub roll",
+      1,
+      "each"
+     ]
+    ],
+    "steps": [
+     "Form the turkey mixture into meatballs and cook through in a pan or oven.",
+     "Simmer briefly in tomato sauce.",
+     "Pile into the sub roll and top with mozzarella."
+    ],
+    "prep": 15,
+    "cook": 20
+   }
+  ],
+  "dinner": [
+   {
+    "name": "Grilled Chicken Fajitas with Rice & Peppers",
+    "tag": "Performance",
+    "cal": 900,
+    "protein": 56,
+    "serving": "1 plate (~700 g)",
+    "ing": [
+     [
+      "chicken breast",
+      200,
+      "g"
+     ],
+     [
+      "dry rice",
+      90,
+      "g"
+     ],
+     [
+      "bell pepper",
+      80,
+      "g"
+     ],
+     [
+      "onion",
+      50,
+      "g"
+     ],
+     [
+      "lime",
+      0.25,
+      "each"
+     ],
+     [
+      "cilantro",
+      5,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Slice the chicken and marinate briefly with lime juice.",
+     "Grill or pan-sear the chicken with peppers and onion until cooked through.",
+     "Serve over rice with a scatter of cilantro."
+    ],
+    "prep": 15,
+    "cook": 20,
+    "dinnerStructure": {
+     "protein": "chicken breast",
+     "starch": "dry rice",
+     "vegetables": [
+      "bell pepper",
+      "onion"
+     ]
+    }
+   },
+   {
+    "name": "Baked Ziti with Garlic Bread & Caesar Salad",
+    "tag": "Comfort",
+    "cal": 980,
+    "protein": 46,
+    "serving": "1 plate (~760 g)",
+    "ing": [
+     [
+      "lean ground beef",
+      150,
+      "g"
+     ],
+     [
+      "dry penne",
+      110,
+      "g"
+     ],
+     [
+      "tomato sauce",
+      180,
+      "g"
+     ],
+     [
+      "mozzarella",
+      50,
+      "g"
+     ],
+     [
+      "Caesar salad",
+      150,
+      "g"
+     ],
+     [
+      "garlic bread",
+      1,
+      "each"
+     ],
+     [
+      "tomato",
+      50,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Brown the beef and combine with tomato sauce and cooked pasta.",
+     "Transfer to a baking dish, top with mozzarella and bake until bubbling.",
+     "Serve with Caesar salad and garlic bread."
+    ],
+    "prep": 15,
+    "cook": 30,
+    "dinnerStructure": {
+     "protein": "lean ground beef",
+     "starch": "dry penne",
+     "salad": "Caesar salad",
+     "vegetables": [
+      "tomato"
+     ]
+    }
+   },
+   {
+    "name": "Pork Chops with Sweet Potato & Green Beans",
+    "tag": "Fresh",
+    "cal": 920,
+    "protein": 54,
+    "serving": "1 plate (~700 g)",
+    "ing": [
+     [
+      "pork chops",
+      220,
+      "g"
+     ],
+     [
+      "sweet potato",
+      220,
+      "g"
+     ],
+     [
+      "green beans",
+      100,
+      "g"
+     ],
+     [
+      "carrots",
+      70,
+      "g"
+     ],
+     [
+      "olive oil",
+      12,
+      "ml"
+     ],
+     [
+      "dried oregano",
+      2,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Season the pork chops and pan-sear or grill until fully cooked.",
+     "Roast the sweet potato until tender.",
+     "Steam the green beans and carrots and plate together."
+    ],
+    "prep": 15,
+    "cook": 30,
+    "dinnerStructure": {
+     "protein": "pork chops",
+     "starch": "sweet potato",
+     "vegetables": [
+      "green beans",
+      "carrots"
+     ]
+    }
+   }
+  ]
+ },
+ "6": {
+  "breakfast": [
+   {
+    "name": "Belgian Waffles with Fresh Berries",
+    "tag": "Comfort",
+    "cal": 700,
+    "protein": 24,
+    "serving": "1 plate (~420 g)",
+    "ing": [
+     [
+      "waffle mix",
+      100,
+      "g"
+     ],
+     [
+      "eggs",
+      1,
+      "each"
+     ],
+     [
+      "milk",
+      150,
+      "ml"
+     ],
+     [
+      "mixed berries",
+      80,
+      "g"
+     ],
+     [
+      "maple syrup",
+      20,
+      "ml"
+     ]
+    ],
+    "steps": [
+     "Mix the waffle batter and cook in a waffle iron until golden.",
+     "Top with fresh berries.",
+     "Finish with maple syrup."
+    ],
+    "prep": 10,
+    "cook": 15
+   },
+   {
+    "name": "Ham, Spinach & Cheddar Egg Bites",
+    "tag": "Performance",
+    "cal": 520,
+    "protein": 32,
+    "serving": "3 egg bites (~280 g)",
+    "ing": [
+     [
+      "eggs",
+      3,
+      "each"
+     ],
+     [
+      "deli ham",
+      40,
+      "g"
+     ],
+     [
+      "spinach",
+      30,
+      "g"
+     ],
+     [
+      "cheddar",
+      25,
+      "g"
+     ],
+     [
+      "milk",
+      30,
+      "ml"
+     ]
+    ],
+    "steps": [
+     "Whisk the eggs with milk and season lightly.",
+     "Stir in chopped ham, spinach and cheese.",
+     "Pour into a greased muffin tin and bake until puffed and set; serve warm."
+    ],
+    "prep": 8,
+    "cook": 18
+   },
+   {
+    "name": "Smoothie Bowl with Granola",
+    "tag": "Fresh",
+    "cal": 520,
+    "protein": 22,
+    "serving": "1 bowl (~350 g)",
+    "ing": [
+     [
+      "mixed berries",
+      100,
+      "g"
+     ],
+     [
+      "banana",
+      1,
+      "each"
+     ],
+     [
+      "Greek yogurt",
+      120,
+      "g"
+     ],
+     [
+      "granola",
+      30,
+      "g"
+     ],
+     [
+      "honey",
+      10,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Blend the berries, banana and yogurt until smooth.",
+     "Pour into a bowl.",
+     "Top with granola and a drizzle of honey."
+    ],
+    "prep": 8,
+    "cook": 0
+   }
+  ],
+  "lunch": [
+   {
+    "name": "Grilled Cheese with Tomato Soup",
+    "tag": "Comfort",
+    "cal": 680,
+    "protein": 26,
+    "serving": "1 sandwich + soup (~450 g)",
+    "ing": [
+     [
+      "whole-grain bread",
+      2,
+      "slices"
+     ],
+     [
+      "cheddar",
+      40,
+      "g"
+     ],
+     [
+      "butter",
+      8,
+      "g"
+     ],
+     [
+      "tomato sauce",
+      200,
+      "g"
+     ],
+     [
+      "milk",
+      60,
+      "ml"
+     ]
+    ],
+    "steps": [
+     "Butter the bread and fill with cheese, then grill until golden and melted.",
+     "Warm the tomato sauce with milk to make soup.",
+     "Serve the sandwich alongside the soup."
+    ],
+    "prep": 8,
+    "cook": 12
+   },
+   {
+    "name": "Chicken Fajita Bowl",
+    "tag": "Performance",
+    "cal": 750,
+    "protein": 50,
+    "serving": "1 bowl (~500 g)",
+    "ing": [
+     [
+      "chicken breast",
+      160,
+      "g"
+     ],
+     [
+      "dry rice",
+      80,
+      "g"
+     ],
+     [
+      "bell pepper",
+      60,
+      "g"
+     ],
+     [
+      "onion",
+      40,
+      "g"
+     ],
+     [
+      "salsa",
+      30,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Cook the rice according to package directions.",
+     "Saute the chicken with peppers and onion until cooked through.",
+     "Assemble in a bowl over rice and top with salsa."
+    ],
+    "prep": 12,
+    "cook": 18
+   },
+   {
+    "name": "Roast Beef Sandwich with Horseradish",
+    "tag": "Fast",
+    "cal": 700,
+    "protein": 42,
+    "serving": "1 sandwich (~400 g)",
+    "ing": [
+     [
+      "whole-grain bread",
+      2,
+      "slices"
+     ],
+     [
+      "beef sirloin",
+      120,
+      "g"
+     ],
+     [
+      "horseradish sauce",
+      15,
+      "g"
+     ],
+     [
+      "romaine",
+      20,
+      "g"
+     ],
+     [
+      "tomato",
+      30,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Layer sliced roast beef, lettuce and tomato on the bread.",
+     "Spread with horseradish sauce.",
+     "Close the sandwich and slice."
+    ],
+    "prep": 10,
+    "cook": 0
+   }
+  ],
+  "dinner": [
+   {
+    "name": "Slow-Cooked BBQ Ribs with Corn & Coleslaw",
+    "tag": "Performance",
+    "cal": 1040,
+    "protein": 58,
+    "serving": "1 plate (~750 g)",
+    "ing": [
+     [
+      "pork ribs",
+      250,
+      "g"
+     ],
+     [
+      "bbq sauce",
+      40,
+      "g"
+     ],
+     [
+      "corn on the cob",
+      1,
+      "each"
+     ],
+     [
+      "coleslaw",
+      120,
+      "g"
+     ],
+     [
+      "carrots",
+      70,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Season the ribs and cook low and slow until tender, basting with bbq sauce.",
+     "Boil or grill the corn on the cob.",
+     "Serve the ribs with coleslaw and carrots."
+    ],
+    "prep": 15,
+    "cook": 180,
+    "dinnerStructure": {
+     "protein": "pork ribs",
+     "starch": "corn on the cob",
+     "salad": "coleslaw",
+     "vegetables": [
+      "carrots"
+     ]
+    }
+   },
+   {
+    "name": "Chicken Parmesan with Spaghetti & Side Salad",
+    "tag": "Comfort",
+    "cal": 990,
+    "protein": 56,
+    "serving": "1 plate (~760 g)",
+    "ing": [
+     [
+      "chicken breast",
+      200,
+      "g"
+     ],
+     [
+      "breadcrumbs",
+      30,
+      "g"
+     ],
+     [
+      "eggs",
+      0.5,
+      "each"
+     ],
+     [
+      "mozzarella",
+      40,
+      "g"
+     ],
+     [
+      "tomato sauce",
+      150,
+      "g"
+     ],
+     [
+      "spaghetti",
+      100,
+      "g"
+     ],
+     [
+      "mixed green salad",
+      120,
+      "g"
+     ],
+     [
+      "tomato",
+      40,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Bread the chicken with egg and breadcrumbs, then pan-fry or bake until golden and cooked through.",
+     "Top with tomato sauce and mozzarella and bake until melted.",
+     "Serve over spaghetti with a side salad."
+    ],
+    "prep": 20,
+    "cook": 30,
+    "dinnerStructure": {
+     "protein": "chicken breast",
+     "starch": "spaghetti",
+     "salad": "mixed green salad",
+     "vegetables": [
+      "tomato"
+     ]
+    }
+   },
+   {
+    "name": "Grilled Shrimp Skewers with Rice & Grilled Vegetables",
+    "tag": "Fresh",
+    "cal": 860,
+    "protein": 50,
+    "serving": "1 plate (~680 g)",
+    "ing": [
+     [
+      "shrimp",
+      200,
+      "g"
+     ],
+     [
+      "dry rice",
+      90,
+      "g"
+     ],
+     [
+      "zucchini",
+      80,
+      "g"
+     ],
+     [
+      "bell pepper",
+      60,
+      "g"
+     ],
+     [
+      "olive oil",
+      12,
+      "ml"
+     ],
+     [
+      "garlic",
+      5,
+      "g"
+     ],
+     [
+      "lemon",
+      0.25,
+      "each"
+     ]
+    ],
+    "steps": [
+     "Marinate the shrimp briefly in olive oil, garlic and lemon, then thread onto skewers and grill until pink.",
+     "Cook the rice according to package directions.",
+     "Grill the zucchini and pepper and serve alongside."
+    ],
+    "prep": 15,
+    "cook": 15,
+    "dinnerStructure": {
+     "protein": "shrimp",
+     "starch": "dry rice",
+     "vegetables": [
+      "zucchini",
+      "bell pepper"
+     ]
+    }
+   }
+  ]
+ },
+ "7": {
+  "breakfast": [
+   {
+    "name": "Classic Pancake Breakfast with Bacon",
+    "tag": "Comfort",
+    "cal": 760,
+    "protein": 30,
+    "serving": "1 plate (~480 g)",
+    "ing": [
+     [
+      "pancake mix",
+      120,
+      "g"
+     ],
+     [
+      "eggs",
+      1,
+      "each"
+     ],
+     [
+      "milk",
+      200,
+      "ml"
+     ],
+     [
+      "bacon",
+      40,
+      "g"
+     ],
+     [
+      "maple syrup",
+      25,
+      "ml"
+     ]
+    ],
+    "steps": [
+     "Mix the pancake batter and cook on a griddle until golden on both sides.",
+     "Cook the bacon until crisp.",
+     "Serve together with maple syrup."
+    ],
+    "prep": 10,
+    "cook": 18
+   },
+   {
+    "name": "Eggs Benedict with Fruit",
+    "tag": "Performance",
+    "cal": 680,
+    "protein": 32,
+    "serving": "1 plate (~400 g)",
+    "ing": [
+     [
+      "english muffin",
+      1,
+      "each"
+     ],
+     [
+      "eggs",
+      2,
+      "each"
+     ],
+     [
+      "deli ham",
+      50,
+      "g"
+     ],
+     [
+      "hollandaise sauce",
+      30,
+      "g"
+     ],
+     [
+      "fresh fruit salad",
+      100,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Toast the muffin halves and top with ham.",
+     "Poach the eggs until the whites are set and yolks still soft.",
+     "Top with hollandaise and serve with fresh fruit."
+    ],
+    "prep": 12,
+    "cook": 12
+   },
+   {
+    "name": "Breakfast Hash with Sausage & Peppers",
+    "tag": "Hearty",
+    "cal": 700,
+    "protein": 32,
+    "serving": "1 plate (~450 g)",
+    "ing": [
+     [
+      "hash browns",
+      150,
+      "g"
+     ],
+     [
+      "breakfast sausage",
+      70,
+      "g"
+     ],
+     [
+      "bell pepper",
+      40,
+      "g"
+     ],
+     [
+      "onion",
+      30,
+      "g"
+     ],
+     [
+      "eggs",
+      1,
+      "each"
+     ]
+    ],
+    "steps": [
+     "Cook the sausage with peppers and onion until browned.",
+     "Add the hash browns and cook until crisp.",
+     "Top with a fried egg and serve."
+    ],
+    "prep": 12,
+    "cook": 20
+   }
+  ],
+  "lunch": [
+   {
+    "name": "Turkey, Brie & Cranberry Sandwich",
+    "tag": "Comfort",
+    "cal": 740,
+    "protein": 42,
+    "serving": "1 sandwich (~420 g)",
+    "ing": [
+     [
+      "whole-grain bread",
+      2,
+      "slices"
+     ],
+     [
+      "turkey breast",
+      110,
+      "g"
+     ],
+     [
+      "cranberry sauce",
+      20,
+      "g"
+     ],
+     [
+      "brie cheese",
+      30,
+      "g"
+     ],
+     [
+      "romaine",
+      20,
+      "g"
+     ],
+     [
+      "Dijon mustard",
+      5,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Spread one slice of bread with cranberry sauce and the other with a thin layer of Dijon mustard.",
+     "Layer turkey, brie and lettuce between the slices.",
+     "Press gently in a pan or panini press until the brie softens slightly, then slice and serve."
+    ],
+    "prep": 8,
+    "cook": 6
+   },
+   {
+    "name": "Southwest Chicken Salad",
+    "tag": "Fresh",
+    "cal": 680,
+    "protein": 46,
+    "serving": "1 bowl (~480 g)",
+    "ing": [
+     [
+      "chicken breast",
+      150,
+      "g"
+     ],
+     [
+      "romaine",
+      100,
+      "g"
+     ],
+     [
+      "black beans",
+      60,
+      "g"
+     ],
+     [
+      "corn kernels",
+      50,
+      "g"
+     ],
+     [
+      "salsa",
+      30,
+      "g"
+     ],
+     [
+      "cheddar",
+      25,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Grill and slice the chicken.",
+     "Toss romaine with beans, corn and cheese.",
+     "Top with chicken and a spoonful of salsa."
+    ],
+    "prep": 12,
+    "cook": 12
+   },
+   {
+    "name": "Ham & Pea Soup with Roll",
+    "tag": "Warm",
+    "cal": 620,
+    "protein": 34,
+    "serving": "1 bowl + roll (~480 g)",
+    "ing": [
+     [
+      "deli ham",
+      80,
+      "g"
+     ],
+     [
+      "split peas",
+      70,
+      "g"
+     ],
+     [
+      "carrots",
+      50,
+      "g"
+     ],
+     [
+      "chicken broth",
+      300,
+      "ml"
+     ],
+     [
+      "whole-grain roll",
+      1,
+      "each"
+     ]
+    ],
+    "steps": [
+     "Simmer the split peas with broth until tender.",
+     "Add diced ham and carrots and simmer until the peas soften into a thick soup.",
+     "Serve hot with a roll."
+    ],
+    "prep": 10,
+    "cook": 35
+   }
+  ],
+  "dinner": [
+   {
+    "name": "Sunday Roast Chicken with Mashed Potatoes & Green Beans",
+    "tag": "Performance",
+    "cal": 970,
+    "protein": 60,
+    "serving": "1 plate (~780 g)",
+    "ing": [
+     [
+      "chicken breast",
+      230,
+      "g"
+     ],
+     [
+      "mashed potatoes",
+      230,
+      "g"
+     ],
+     [
+      "green beans",
+      100,
+      "g"
+     ],
+     [
+      "carrots",
+      80,
+      "g"
+     ],
+     [
+      "olive oil",
+      12,
+      "ml"
+     ],
+     [
+      "rosemary",
+      3,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Rub the chicken with olive oil and rosemary and roast until fully cooked.",
+     "Prepare or warm the mashed potatoes.",
+     "Steam the green beans and carrots and plate with the chicken."
+    ],
+    "prep": 15,
+    "cook": 40,
+    "dinnerStructure": {
+     "protein": "chicken breast",
+     "starch": "mashed potatoes",
+     "vegetables": [
+      "green beans",
+      "carrots"
+     ]
+    }
+   },
+   {
+    "name": "Baked Ham with Scalloped Potatoes & Carrots",
+    "tag": "Comfort",
+    "cal": 1010,
+    "protein": 52,
+    "serving": "1 plate (~760 g)",
+    "ing": [
+     [
+      "baked ham",
+      220,
+      "g"
+     ],
+     [
+      "scalloped potatoes",
+      230,
+      "g"
+     ],
+     [
+      "carrots",
+      90,
+      "g"
+     ],
+     [
+      "green beans",
+      90,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Warm or bake the ham until heated through, glazing lightly if desired.",
+     "Prepare or warm the scalloped potatoes.",
+     "Steam the carrots and green beans and plate together."
+    ],
+    "prep": 15,
+    "cook": 40,
+    "dinnerStructure": {
+     "protein": "baked ham",
+     "starch": "scalloped potatoes",
+     "vegetables": [
+      "carrots",
+      "green beans"
+     ]
+    }
+   },
+   {
+    "name": "Beef Pot Roast with Vegetables",
+    "tag": "Hearty",
+    "cal": 990,
+    "protein": 56,
+    "serving": "1 plate (~780 g)",
+    "ing": [
+     [
+      "beef chuck roast",
+      220,
+      "g"
+     ],
+     [
+      "baby potatoes",
+      200,
+      "g"
+     ],
+     [
+      "carrots",
+      90,
+      "g"
+     ],
+     [
+      "onion",
+      50,
+      "g"
+     ],
+     [
+      "beef broth",
+      200,
+      "ml"
+     ],
+     [
+      "dried oregano",
+      2,
+      "g"
+     ]
+    ],
+    "steps": [
+     "Sear the beef, then braise slowly with broth, onion and carrots until fork-tender.",
+     "Add the potatoes partway through cooking so they become tender too.",
+     "Serve the beef with the vegetables and pan juices."
+    ],
+    "prep": 15,
+    "cook": 150,
+    "dinnerStructure": {
+     "protein": "beef chuck roast",
+     "starch": "baby potatoes",
+     "vegetables": [
+      "carrots",
+      "onion"
+     ]
+    }
+   }
+  ]
+ }
+};
+
+
+const sides = {
+ breakfast:[
+  {name:"Sliced Tomato, Cucumber & Cheese",cal:150,protein:8,tag:"Fresh",serving:"1 side plate (~150 g)",
+   ing:[["tomato",60,"g"],["cucumber",60,"g"],["cheddar",30,"g"]],
+   steps:["Slice the tomato, cucumber and cheese evenly.","Arrange on a platter for self-serve."],prep:8,cook:0},
+  {name:"Sliced Ham Platter",cal:110,protein:14,tag:"Protein",serving:"1 side plate (~70 g)",
+   ing:[["deli ham",70,"g"]],
+   steps:["Arrange sliced ham on a platter, keeping chilled until service."],prep:3,cook:0},
+  {name:"Orange Juice",cal:110,protein:0,tag:"Refresh",serving:"1 glass (250 ml)",
+   ing:[["orange juice",250,"ml"]],
+   steps:["Pour chilled orange juice and serve immediately."],prep:2,cook:0},
+  {name:"Yogurt & Granola",cal:230,protein:14,tag:"Crunchy",serving:"1 bowl (~190 g)",
+   ing:[["Greek yogurt",150,"g"],["granola",40,"g"]],
+   steps:["Spoon yogurt into a bowl or cup.","Top with granola just before serving so it stays crunchy."],prep:5,cook:0},
+  {name:"Hot Cinnamon Oatmeal with Milk",cal:180,protein:7,tag:"Warm",serving:"1 bowl (~210 g)",
+   ing:[["rolled oats",60,"g"],["milk",150,"ml"],["cinnamon",2,"g"]],
+   steps:["Simmer the oats in milk until creamy, about 6-7 minutes.","Stir in cinnamon and serve hot."],prep:3,cook:8}
+ ],
+ lunch:[
+  {name:"Warm Herb Potato Salad",cal:210,protein:4,tag:"Hearty",serving:"1 side (~200 g)",
+   ing:[["baby potatoes",180,"g"],["olive oil",10,"ml"],["parsley",5,"g"],["lemon",0.25,"each"]],
+   steps:["Boil the potatoes until fork-tender, then halve.","Toss warm with olive oil, chopped parsley and a squeeze of lemon."],prep:10,cook:20},
+  {name:"Quinoa Apple Almond Salad with Parsley Garlic Dressing",cal:260,protein:8,tag:"Wholesome",serving:"1 side (~185 g)",
+   ing:[["quinoa",70,"g"],["apple",0.5,"each"],["almonds",20,"g"],["parsley",5,"g"],["olive oil",10,"ml"],["garlic",3,"g"]],
+   steps:["Cook the quinoa and let it cool slightly.","Dice the apple and toast the almonds lightly.","Whisk olive oil with minced garlic and chopped parsley for the dressing.","Toss everything together just before serving."],prep:15,cook:15},
+  {name:"Beef & Vegetable Soup",cal:190,protein:15,tag:"Warm",serving:"1 bowl (~360 g)",
+   ing:[["lean ground beef",70,"g"],["carrots",50,"g"],["broccoli",40,"g"],["beef broth",200,"ml"]],
+   steps:["Brown the beef in a pot, then drain excess fat.","Add the broth and vegetables and simmer until tender, about 15 minutes.","Season to taste and hold hot until service."],prep:10,cook:20},
+  {name:"Creamy Tomato Soup with Croutons",cal:170,protein:5,tag:"Comfort",serving:"1 bowl (~275 g)",
+   ing:[["tomato sauce",200,"g"],["milk",60,"ml"],["croutons",15,"g"]],
+   steps:["Warm the tomato sauce with milk over low heat, stirring until smooth.","Ladle into bowls and top with croutons just before serving."],prep:5,cook:10},
+  {name:"Fresh Vegetable Crudite with Ranch",cal:130,protein:2,tag:"Fresh",serving:"1 side (~210 g)",
+   ing:[["carrots",60,"g"],["cucumber",60,"g"],["bell pepper",60,"g"],["ranch dressing",30,"g"]],
+   steps:["Cut vegetables into sticks.","Arrange around a bowl of ranch dressing for dipping."],prep:12,cook:0},
+  {name:"Green Salad with Mixed Chopped Vegetables & Lemon Dressing",cal:190,protein:6,tag:"Fresh",serving:"1 side (~200 g)",
+   ing:[["romaine",75,"g"],["cucumber",30,"g"],["tomato",30,"g"],["bell pepper",25,"g"],["carrots",20,"g"],["feta",15,"g"],["olive oil",8,"ml"],["lemon",0.25,"each"],["salt",1,"g"]],
+   steps:["Chop the romaine, cucumber, tomato, bell pepper and carrots into bite-size pieces.","Whisk the olive oil with lemon juice and a pinch of salt for the dressing.","Toss the vegetables with the feta and dressing just before serving so the greens stay crisp."],prep:10,cook:0}
+ ],
+ dinner:[
+  {name:"Bread Roll & Butter",cal:180,protein:4,tag:"Classic",serving:"1 roll (~60 g)",
+   ing:[["dinner roll",1,"each"],["butter",10,"g"]],
+   steps:["Warm rolls briefly and serve with butter."],prep:1,cook:3},
+  {name:"Brownies",cal:220,protein:3,tag:"Dessert",serving:"1 brownie (~60 g)",
+   ing:[["brownies",60,"g"]],
+   steps:["Arrange brownies on a platter for service."],prep:2,cook:0},
+  {name:"Baked Apple Crumble",cal:210,protein:2,tag:"Dessert",serving:"1 serving (~200 g)",
+   ing:[["apple",1,"each"],["rolled oats",25,"g"],["brown sugar",15,"g"],["butter",10,"g"]],
+   steps:["Slice the apple into a baking dish.","Mix oats, brown sugar and softened butter into a crumble topping and sprinkle over the apple.","Bake until the apple is tender and the topping is golden, about 20 minutes."],prep:10,cook:20},
+  {name:"Chocolate Chip Cookies",cal:230,protein:3,tag:"Dessert",serving:"2 cookies (~50 g)",
+   ing:[["chocolate chip cookies",50,"g"]],
+   steps:["Arrange cookies on a platter for service."],prep:2,cook:0},
+  {name:"Fresh Fruit Platter",cal:100,protein:1,tag:"Fresh",serving:"1 side (~200 g)",
+   ing:[["fresh fruit salad",200,"g"]],
+   steps:["Arrange fresh sliced fruit on a platter.","Keep chilled until service."],prep:10,cook:0}
+ ]
+};
+
+let selections={};
+let sideSelections={};
+let currentGrocery={};
+let dietarySelections={};
+let duplicateFrom={};
+let excludedMeals={};
+let activeDayTab=1;
+function showDayTab(day){
+ activeDayTab = day;
+ document.querySelectorAll(".day-panel").forEach(el=>{
+   el.style.display = (Number(el.dataset.day)===day) ? "block" : "none";
+ });
+ document.querySelectorAll(".day-tab-btn").forEach((el,i)=>{
+   el.classList.toggle("active", (i+1)===day);
+ });
+}
+let customRecipes=[];
+let customIngredientRowCount=0;
+
+if(storageAvailable){
+  try{
+    const saved = localStorage.getItem("feedCrewCustomRecipes");
+    if(saved) customRecipes = JSON.parse(saved) || [];
+  }catch(e){ customRecipes=[]; }
+}
+
+function saveCustomRecipes(){
+  if(storageAvailable){
+    try{ localStorage.setItem("feedCrewCustomRecipes", JSON.stringify(customRecipes)); }catch(e){}
+  }
+}
+
+function mealOptions(day,type){
+  const builtIn = recipesByDay[dayKeyOf(day)][type];
+  const custom = customRecipes.filter(r=>r.mealType===type);
+  return [...builtIn, ...custom];
+}
+
+function addCustomIngredientRow(){
+  customIngredientRowCount++;
+  const id = customIngredientRowCount;
+  const container = document.getElementById("customIngredientRows");
+  const row = document.createElement("div");
+  row.className = "ing-row";
+  row.id = "ingRow"+id;
+  row.innerHTML = `
+    <input type="text" placeholder="ingredient name" id="ingName${id}" oninput="refreshCustomDinnerDropdowns()">
+    <input type="number" min="0" step="any" placeholder="qty" id="ingQty${id}" value="1">
+    <select id="ingUnit${id}"><option value="g">g</option><option value="ml">ml</option><option value="each">each</option><option value="slices">slices</option></select>
+    <button class="secondary" onclick="removeCustomIngredientRow(${id})">✕</button>
+  `;
+  container.appendChild(row);
+}
+function removeCustomIngredientRow(id){
+  const row = document.getElementById("ingRow"+id);
+  if(row) row.remove();
+  refreshCustomDinnerDropdowns();
+}
+function readCustomIngredients(){
+  const rows = document.querySelectorAll("#customIngredientRows .ing-row");
+  const ing = [];
+  rows.forEach(row=>{
+    const idSuffix = row.id.replace("ingRow","");
+    const name = document.getElementById("ingName"+idSuffix).value.trim();
+    const qty = Number(document.getElementById("ingQty"+idSuffix).value)||0;
+    const unit = document.getElementById("ingUnit"+idSuffix).value;
+    if(name && qty>0) ing.push([name,qty,unit]);
+  });
+  return ing;
+}
+function renderCustomDinnerFields(){
+  const isDinner = document.getElementById("customMealType").value==="dinner";
+  document.getElementById("customDinnerFields").hidden = !isDinner;
+  if(isDinner) refreshCustomDinnerDropdowns();
+}
+function refreshCustomDinnerDropdowns(){
+  if(document.getElementById("customMealType").value!=="dinner") return;
+  const ing = readCustomIngredients();
+  const names = ing.map(i=>i[0]);
+  const proteinSel = document.getElementById("customProteinIng");
+  const starchSel = document.getElementById("customStarchIng");
+  const vegSel = document.getElementById("customVegIng");
+  const prevProtein = proteinSel.value, prevStarch = starchSel.value;
+  const prevVeg = Array.from(vegSel.selectedOptions).map(o=>o.value);
+  const opts = names.map(n=>`<option value="${n}">${n}</option>`).join("");
+  proteinSel.innerHTML = `<option value="">— choose —</option>${opts}`;
+  starchSel.innerHTML = `<option value="">— choose —</option>${opts}`;
+  vegSel.innerHTML = opts;
+  if(names.includes(prevProtein)) proteinSel.value=prevProtein;
+  if(names.includes(prevStarch)) starchSel.value=prevStarch;
+  Array.from(vegSel.options).forEach(o=>{ if(prevVeg.includes(o.value)) o.selected=true; });
+}
+
+async function estimateCustomNutrition(){
+  const statusEl = document.getElementById("customNutritionStatus");
+  const ing = readCustomIngredients();
+  const name = document.getElementById("customName").value.trim();
+  const serving = document.getElementById("customServing").value.trim();
+  if(!ing.length){ statusEl.textContent="Add at least one ingredient first."; return; }
+  statusEl.textContent = "Estimating...";
+  try{
+    const ingredientList = ing.map(([n,q,u])=>`${q} ${u} ${n}`).join(", ");
+    const token = localStorage.getItem("ftc_access_token");
+    const response = await fetch("/.netlify/functions/estimate-nutrition", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, recipeName: name, servingDescription: serving, ingredientList })
+    });
+    if(!response.ok){
+      const errBody = await response.json().catch(()=>({}));
+      throw new Error(errBody.error || ("status "+response.status));
+    }
+    const data = await response.json();
+    const textBlock = (data.content||[]).find(b=>b.type==="text");
+    const cleaned = textBlock.text.replace(/```json|```/g,"").trim();
+    const parsed = JSON.parse(cleaned);
+    document.getElementById("customCal").value = Math.round(parsed.calories)||"";
+    document.getElementById("customProtein").value = Math.round(parsed.protein)||"";
+    statusEl.textContent = "Estimated — double-check these before adding, this is an AI approximation, not lab-tested nutrition data.";
+  }catch(err){
+    console.error(err);
+    statusEl.textContent = err.message && err.message.includes("Pro & Catering")
+      ? err.message
+      : "Couldn't estimate automatically — please enter calories and protein manually.";
+  }
+}
+
+function addCustomRecipe(){
+  const statusEl = document.getElementById("customRecipeStatus");
+  const name = document.getElementById("customName").value.trim();
+  const mealType = document.getElementById("customMealType").value;
+  const serving = document.getElementById("customServing").value.trim() || "1 serving";
+  const ing = readCustomIngredients();
+  const cal = Number(document.getElementById("customCal").value)||0;
+  const protein = Number(document.getElementById("customProtein").value)||0;
+  const prep = Number(document.getElementById("customPrep").value)||0;
+  const cook = Number(document.getElementById("customCook").value)||0;
+  const steps = document.getElementById("customSteps").value.split("\n").map(s=>s.trim()).filter(Boolean);
+
+  if(!name){ statusEl.textContent="Give the recipe a name first."; return; }
+  if(!ing.length){ statusEl.textContent="Add at least one ingredient."; return; }
+  if(cal<=0 || protein<=0){ statusEl.textContent="Enter calories and protein per serving (or use the AI estimate button)."; return; }
+  if(!steps.length){ statusEl.textContent="Add at least one method step."; return; }
+
+  let dinnerStructure = null;
+  if(mealType==="dinner"){
+    const proteinIng = document.getElementById("customProteinIng").value;
+    const starchIng = document.getElementById("customStarchIng").value;
+    const vegIng = Array.from(document.getElementById("customVegIng").selectedOptions).map(o=>o.value);
+    if(!proteinIng || !starchIng || vegIng.length<2){
+      statusEl.textContent = "Dinners need a protein ingredient, a starch ingredient, and at least 2 vegetable/salad ingredients selected below.";
+      return;
+    }
+    dinnerStructure = { protein:proteinIng, starch:starchIng, vegetables:vegIng };
+  }
+
+  // register any brand-new ingredient names so pricing/grocery math works
+  ing.forEach(([n,q,u])=>{
+    const unitKey = (u==="g")?"kg":(u==="ml")?"L":u;
+    if(!defaultUnits[n]) defaultUnits[n]=unitKey;
+    if(!ingredientPrices[n]) ingredientPrices[n]={price:0,unit:unitKey,packQty:1,packTotal:0};
+  });
+
+  const recipe = { name, tag:"Custom", cal, protein, serving, ing, steps, prep, cook, mealType };
+  if(dinnerStructure) recipe.dinnerStructure = dinnerStructure;
+
+  customRecipes.push(recipe);
+  saveCustomRecipes();
+  renderCustomRecipeList();
+
+  document.getElementById("customName").value="";
+  document.getElementById("customServing").value="";
+  document.getElementById("customIngredientRows").innerHTML="";
+  document.getElementById("customCal").value="";
+  document.getElementById("customProtein").value="";
+  document.getElementById("customSteps").value="";
+  document.getElementById("customNutritionStatus").textContent="";
+  statusEl.textContent = `"${name}" added — it now appears as an option for every ${mealType}.`;
+  generate(false);
+}
+
+function removeCustomRecipe(index){
+  customRecipes.splice(index,1);
+  saveCustomRecipes();
+  renderCustomRecipeList();
+  generate(false);
+}
+
+function renderCustomRecipeList(){
+  const el = document.getElementById("customRecipeList");
+  if(!el) return;
+  if(!customRecipes.length){ el.innerHTML=""; return; }
+  el.innerHTML = `<label>Your custom recipes</label><p class="sub" style="margin-top:0">Removing one falls any day using it back to the first built-in option for that meal.</p>` + customRecipes.map((r,i)=>
+    `<div class="custom-recipe-chip"><span>${r.name} <span class="note">(${r.mealType})</span></span><button class="secondary" style="width:auto;padding:4px 10px" onclick="removeCustomRecipe(${i})">Remove</button></div>`
+  ).join("");
+}
+
+
+const allergenIngredients = {
+ "nuts": ["almonds","peanut butter"],
+ "shellfish": ["shrimp"],
+ "eggs": ["eggs","mayonnaise","hollandaise sauce"]
+};
+function allergenFlags(recipe){
+ const hits=[];
+ Object.entries(allergenIngredients).forEach(([label,list])=>{
+   if(recipe.ing.some(([n])=>list.includes(n))) hits.push(label);
+ });
+ return hits;
+}
+function unpricedCount(recipe){
+ return recipe.ing.filter(([n])=>!((ingredientPrices[n]&&ingredientPrices[n].price)>0)).length;
+}
+function toggleExcluded(day,type,checked){
+ excludedMeals[day+"-"+type] = checked;
+ generate(false);
+}
+function applyGlobalDietary(){
+ const gf = Math.max(0, Number(document.getElementById("globalGF").value)||0);
+ const df = Math.max(0, Number(document.getElementById("globalDF").value)||0);
+ for(let day=1; day<=7; day++){
+   ["breakfast","lunch","dinner"].forEach(type=>{
+     dietarySelections[day+"-"+type+"-gf"]=gf;
+     dietarySelections[day+"-"+type+"-df"]=df;
+   });
+ }
+ generate(false);
+}
+function resetAllSelections(){
+ selections={}; sideSelections={}; dietarySelections={}; duplicateFrom={}; excludedMeals={};
+ activeDayTab=1;
+ generate(true);
+}
+
+function setDietary(day,type,diet,value){
+ const n = Math.max(0, Number(value)||0);
+ dietarySelections[day+"-"+type+"-"+diet] = n;
+ liveUpdate();
+}
+function setDuplicate(day,type,value){
+ if(value){ duplicateFrom[day+"-"+type] = Number(value); }
+ else { delete duplicateFrom[day+"-"+type]; }
+ generate(false);
+}
+function clearDuplicate(day,type){
+ delete duplicateFrom[day+"-"+type];
+ generate(false);
+}
+function dietFlags(recipe){
+ const glutenHits=[], dairyHits=[];
+ recipe.ing.forEach(([n])=>{
+   if(glutenMap[n] && !glutenHits.includes(n)) glutenHits.push(n);
+   if(dairyMap[n] && !dairyHits.includes(n)) dairyHits.push(n);
+ });
+ return {glutenHits, dairyHits};
+}
+function dietaryPanel(day,type,recipe,ppl){
+ const {glutenHits,dairyHits} = dietFlags(recipe);
+ const gfVal = dietarySelections[day+"-"+type+"-gf"] || 0;
+ const dfVal = dietarySelections[day+"-"+type+"-df"] || 0;
+ const gfRow = glutenHits.length
+   ? `<div><label style="margin:6px 0 2px">Gluten-free needed for how many people?</label>
+      <input type="number" min="0" max="${ppl}" value="${gfVal}" oninput="setDietary(${day},'${type}','gf',this.value)" style="width:90px;display:inline-block">
+      <span class="note">swaps ${glutenHits.join(", ")}</span></div>`
+   : `<p class="note">✓ Naturally gluten-free as written.</p>`;
+ const dfRow = dairyHits.length
+   ? `<div><label style="margin:6px 0 2px">Dairy-free needed for how many people?</label>
+      <input type="number" min="0" max="${ppl}" value="${dfVal}" oninput="setDietary(${day},'${type}','df',this.value)" style="width:90px;display:inline-block">
+      <span class="note">swaps ${dairyHits.join(", ")}</span></div>`
+   : `<p class="note">✓ Naturally dairy-free as written.</p>`;
+ return `<div class="section" style="margin-top:10px;padding-top:10px">
+   <p class="sub" style="margin-bottom:4px"><strong>Dietary swaps for this meal</strong> — counted people are moved from the regular ingredient to the substitute in the grocery list automatically.</p>
+   ${gfRow}${dfRow}
+ </div>`;
+}
+function addRecipeIngredients(grocery,recipe,ppl,bufferFactor,gfCount,dfCount){
+ recipe.ing.forEach(([n,q,u])=>{
+   let regularCount = ppl;
+   if(gfCount>0 && glutenMap[n]){
+     const c = Math.min(gfCount, ppl);
+     regularCount -= c;
+     const sub = glutenMap[n];
+     if(!grocery[sub]) grocery[sub]={q:0,u,note:"GF substitute"};
+     grocery[sub].q += q*c*bufferFactor;
+   }
+   if(dfCount>0 && dairyMap[n]){
+     const c = Math.min(dfCount, ppl);
+     regularCount -= c;
+     const sub = dairyMap[n];
+     if(!grocery[sub]) grocery[sub]={q:0,u,note:"DF substitute"};
+     grocery[sub].q += q*c*bufferFactor;
+   }
+   regularCount = Math.max(0, regularCount);
+   if(regularCount>0){
+     if(!grocery[n]) grocery[n]={q:0,u};
+     grocery[n].q += q*regularCount*bufferFactor;
+   }
+ });
+}
+
+function formatQty(q,u){
+ if(u==="each"||u==="slices") return (Math.ceil(q*4)/4)+" "+u;
+ if(u==="g"){
+   if(q>=1000)return (Math.ceil(q/100)/10).toFixed(1)+" kg";
+   return Math.ceil(q/25)*25+" g";
+ }
+ if(u==="ml"){
+   if(q>=1000)return (Math.ceil(q/100)/10).toFixed(1)+" L";
+   return Math.ceil(q/25)*25+" ml";
+ }
+ return q+" "+u;
+}
+function kitchenMeasure(name,q,u){
+ if(u==="each"||u==="slices")return Math.ceil(q*4)/4+" "+u;
+ if(u==="ml"){
+   const c=q/240; return c>=.125?(Math.round(c*4)/4)+" cup":"~"+Math.max(1,Math.round(q/15))+" tbsp";
+ }
+ const map={
+  "rolled oats":80,"Greek yogurt":245,"blueberries":150,"pumpkin seeds":160,
+  "pancake mix":125,"black beans":175,"dry rice":190,"broccoli":90,"carrots":125,
+  "bell pepper":150,"chicken breast":140,"turkey breast":120,"cheddar":115,
+  "romaine":50,"tomato":180,"cucumber":120,
+  "feta":150,"baby potatoes":150,"lean ground beef":150,"dry penne":100,
+  "mozzarella":110,"granola":110,"quinoa":170,"almonds":135,"croutons":40
+ };
+ if(u==="g"&&map[name])return (Math.round((q/map[name])*4)/4)+" cup";
+ return "";
+}
+
+function validateDinnerRecipe(recipe){
+  if(!recipe.dinnerStructure) return false;
+  const s = recipe.dinnerStructure;
+  const hasProtein = Boolean(s.protein);
+  const hasStarch = Boolean(s.starch);
+  const vegCount = Array.isArray(s.vegetables) ? s.vegetables.length : 0;
+  const hasSaladAndVeg = Boolean(s.salad) && vegCount >= 1;
+  const hasTwoVeg = vegCount >= 2;
+  return hasProtein && hasStarch && (hasSaladAndVeg || hasTwoVeg);
+}
+
+function dinnerStructureLabel(recipe){
+  const s = recipe.dinnerStructure;
+  if(!s) return "";
+  const sideList = s.salad
+    ? `${s.salad} + ${s.vegetables.join(" + ")}`
+    : s.vegetables.join(" + ");
+  return `<p class="note"><strong>Balanced dinner:</strong> ${s.protein} - ${s.starch} - ${sideList}</p>`;
+}
+
+function dayKeyOf(day){ return String(((day-1)%7)+1); }
+function selectOption(day,type,index){
+ const recipe = mealOptions(day,type)[index];
+ if(type === "dinner" && !validateDinnerRecipe(recipe)){
+   alert("This dinner is missing the required structure: protein, starch, and either a salad plus a vegetable or two vegetable sides.");
+   return;
+ }
+ selections[day+"-"+type]=index;
+ generate(false);
+}
+function selectSide(day,type,index){
+ sideSelections[day+"-"+type]=index;
+ generate(false);
+}
+function recipeCard(r,scale){
+ const ingredients=r.ing.map(([n,q,u])=>`<li><strong>${formatQty(q*scale,u)}</strong> ${n}${scale===1?` <span class="note">(${kitchenMeasure(n,q,u)})</span>`:""}</li>`).join("");
+ return `<div class="recipe">
+   <p><strong>Prep:</strong> ${r.prep} min - <strong>Cook:</strong> ${r.cook} min</p>
+   <details><summary>View recipe</summary>
+     <h5>Ingredients</h5><ul>${ingredients}</ul>
+     <h5>Method</h5><ol>${r.steps.map(s=>`<li>${s}</li>`).join("")}</ol>
+   </details>
+ </div>`;
+}
+function printRecipeCard(r,scale){
+ const ingredients=r.ing.map(([n,q,u])=>`<li><strong>${formatQty(q*scale,u)}</strong> ${n}</li>`).join("");
+ return `<div class="recipe">
+   <p><strong>Prep:</strong> ${r.prep} min - <strong>Cook:</strong> ${r.cook} min - ${r.serving} - ${r.cal} kcal, ${r.protein} g protein per serving</p>
+   <h5>Ingredients (serves ${scale})</h5><ul>${ingredients}</ul>
+   <h5>Method</h5><ol>${r.steps.map(s=>`<li>${s}</li>`).join("")}</ol>
+ </div>`;
+}
+function printSection(mode){
+ document.body.dataset.print=mode;
+ window.print();
+}
+window.addEventListener('afterprint',()=>{ delete document.body.dataset.print; });
+
+function generate(reset=true){
+ try{
+ const ppl=Math.max(1,Number(people.value)||1);
+ const d=Math.max(1,Number(days.value)||1);
+ const protein=calcProtein();
+ const bulkServings=ppl;
+ const bufferFactor=Number(buffer.value);
+ const calTarget=Number(calories.value);
+ if(reset){ selections={}; sideSelections={}; }
+ let html=`<div class="toolbar"><div><h2 style="margin:0">${d}-day plan for ${ppl}</h2><p class="sub">${profile.selectedOptions[0].text} - bulk recipes scaled to ${bulkServings} servings</p></div></div>
+ <div class="macro-grid">
+  <div class="macro"><strong>${calories.value}</strong><span>kcal target</span></div>
+  <div class="macro"><strong>${protein} g</strong><span>protein target</span></div>
+  <div class="macro"><strong>${Math.round((bufferFactor-1)*100)}%</strong><span>grocery buffer</span></div>
+  <div class="macro"><strong>${bulkServings}</strong><span>recipe servings</span></div>
+ </div>`;
+
+ let grocery={};
+ let menuTableRows="";
+ let recipeBookletHtml="";
+ let dayTotalsRows="";
+ let dayCardsHtml="";
+ let repeatWarnings=[];
+ let prevMealNames={};
+
+ if(activeDayTab>d || activeDayTab<1) activeDayTab=1;
+ let dayTabsHtml = `<div class="day-tabs">` + Array.from({length:d},(_,i)=>i+1).map(dd=>
+   `<button class="day-tab-btn ${dd===activeDayTab?'active':''}" onclick="showDayTab(${dd})">Day ${dd}<span class="tab-sub">${dayLabel(dd)}</span></button>`
+ ).join('') + `</div>`;
+
+ const firstIdx = mealOrder.indexOf(firstMeal.value);
+ const lastIdx = mealOrder.indexOf(lastMeal.value);
+
+ for(let day=1;day<=d;day++){
+   const label=dayLabel(day);
+   let mealTypes;
+   if(d===1){
+     mealTypes = firstIdx<=lastIdx ? mealOrder.slice(firstIdx,lastIdx+1) : [mealOrder[firstIdx]];
+   }else if(day===1){
+     mealTypes = mealOrder.slice(firstIdx);
+   }else if(day===d){
+     mealTypes = mealOrder.slice(0,lastIdx+1);
+   }else{
+     mealTypes = mealOrder.slice();
+   }
+   const earlierDays=[];
+   for(let dd=1; dd<day; dd++) earlierDays.push(dd);
+
+   dayCardsHtml+=`<div class="day-panel" data-day="${day}" style="display:${day===activeDayTab?'block':'none'}">
+   <div class="meal-block"><h3 class="day-title">Day ${day} — ${label}</h3>`;
+   recipeBookletHtml+=`<div class="booklet-day"><h4>Day ${day} — ${label}</h4>`;
+   let dayCal=0, dayProtein=0;
+   let menuRowMeals={breakfast:"—",lunch:"—",dinner:"—"};
+
+   for(const type of mealTypes){
+     const exKey = day+"-"+type;
+     const excluded = !!excludedMeals[exKey];
+     dayCardsHtml+=`<h4 class="meal-title">${type}</h4>
+       <label><input type="checkbox" style="width:auto;display:inline-block" ${excluded?"checked":""} onchange="toggleExcluded(${day},'${type}',this.checked)"> This meal isn't needed for Day ${day}</label>`;
+
+     if(excluded){
+       dayCardsHtml+=`<p class="note">Excluded — no ${type} planned for Day ${day}. No groceries or calories counted for this meal.</p>`;
+       menuRowMeals[type]="Excluded";
+       continue;
+     }
+
+     const options = mealOptions(day,type);
+     const chosen=Math.min(selections[day+"-"+type] ?? 0, options.length-1);
+     const dupKey = day+"-"+type;
+     const dupSource = duplicateFrom[dupKey];
+
+     dayCardsHtml+=`<div class="mains-section"><h5 class="section-label">Main course — choose one</h5>`;
+     if(earlierDays.length){
+       dayCardsHtml+=`<div style="margin-bottom:8px">
+         <label style="margin:0 0 4px">Duplicate a previous day's ${type} instead?</label>
+         <select onchange="setDuplicate(${day},'${type}',this.value)">
+           <option value="">— choose fresh below —</option>
+           ${earlierDays.map(dd=>`<option value="${dd}" ${dupSource===dd?"selected":""}>Day ${dd} — ${dayLabel(dd)}</option>`).join("")}
+         </select>
+       </div>`;
+     }
+
+     let selectedRecipe;
+     if(dupSource){
+       const srcOptions = mealOptions(dupSource,type);
+       const srcChosen = Math.min(selections[dupSource+"-"+type] ?? 0, srcOptions.length-1);
+       selectedRecipe = srcOptions[srcChosen];
+       dayCardsHtml+=`<div class="option selected">
+         <span class="pill">Duplicated</span>${allergenFlags(selectedRecipe).map(a=>`<span class="pill">Contains ${a}</span>`).join('')}<h4>${selectedRecipe.name}</h4>
+         <p class="note">Using the same ${type} as Day ${dupSource} — ${dayLabel(dupSource)}.</p>
+         <p>${selectedRecipe.serving} - ${selectedRecipe.cal} kcal - ${selectedRecipe.protein} g protein per serving</p>
+         ${pricesEntered ? `<p><strong>Estimated food cost:</strong> ${money(recipeCost(selectedRecipe))} per serving${unpricedCount(selectedRecipe)>0?` <span class="note">(${unpricedCount(selectedRecipe)} ingredient${unpricedCount(selectedRecipe)>1?'s':''} unpriced)</span>`:''}</p>` : ''}
+         <button class="secondary" onclick="clearDuplicate(${day},'${type}')">Choose a different meal instead</button>
+         ${recipeCard(selectedRecipe,bulkServings)}
+       </div>`;
+     }else{
+       dayCardsHtml+=`${type === "dinner"
+        ? '<p class="sub">Every dinner is validated before selection and must include a protein, a starch, and either a salad plus a vegetable or two vegetable sides.</p>'
+        : ''}
+      <div class="options">`;
+       options.forEach((r,i)=>{
+         const sel=i===chosen;
+         const dinnerValid = type !== "dinner" || validateDinnerRecipe(r);
+         dayCardsHtml+=`<div class="option ${sel?"selected":""}">
+           <span class="pill">${r.tag}</span>${allergenFlags(r).map(a=>`<span class="pill">Contains ${a}</span>`).join('')}<h4>${r.name}</h4>
+           <p>${r.serving} - ${r.cal} kcal - ${r.protein} g protein per serving</p>
+           ${pricesEntered ? `<p><strong>Estimated food cost:</strong> ${money(recipeCost(r))} per serving${unpricedCount(r)>0?` <span class="note">(${unpricedCount(r)} ingredient${unpricedCount(r)>1?'s':''} unpriced)</span>`:''}</p>` : ''}
+           ${type === "dinner" ? dinnerStructureLabel(r) : ""}
+           <button class="${sel?"primary":"secondary"}" ${dinnerValid ? `onclick="selectOption(${day},'${type}',${i})"` : "disabled"}>${dinnerValid ? (sel?"Selected":"Choose this") : "Dinner structure incomplete"}</button>
+           ${recipeCard(r,bulkServings)}
+         </div>`;
+       });
+       dayCardsHtml+=`</div>`;
+       selectedRecipe=options[chosen];
+     }
+     dayCardsHtml+=`</div>`;
+
+     if(!dupSource && prevMealNames[type]===selectedRecipe.name){
+       repeatWarnings.push(`Day ${day} repeats the same ${type} as an earlier day ("${selectedRecipe.name}") without using the duplicate option — double check this was intentional.`);
+     }
+     prevMealNames[type]=selectedRecipe.name;
+
+     const gfCount = dietarySelections[day+"-"+type+"-gf"] || 0;
+     const dfCount = dietarySelections[day+"-"+type+"-df"] || 0;
+     addRecipeIngredients(grocery,selectedRecipe,ppl,bufferFactor,gfCount,dfCount);
+     dayCal+=selectedRecipe.cal; dayProtein+=selectedRecipe.protein;
+     menuRowMeals[type]=selectedRecipe.name + (dupSource?` (same as Day ${dupSource})`:"");
+
+     const sideKey=day+"-"+type;
+     const chosenSide=sideSelections[sideKey] ?? -1;
+     dayCardsHtml+=`<div class="sides-section"><h5 class="section-label">Optional side dish</h5><div class="options">
+       <div class="option ${chosenSide===-1?"selected":""}">
+         <span class="pill">Optional</span><h4>No side dish</h4>
+         <p>0 kcal - 0 g protein</p>
+         <button class="${chosenSide===-1?"primary":"secondary"}" onclick="selectSide(${day},'${type}',-1)">${chosenSide===-1?"Selected":"Choose this"}</button>
+       </div>`;
+     sides[type].forEach((s,i)=>{
+       const sideSelected=i===chosenSide;
+       dayCardsHtml+=`<div class="option ${sideSelected?"selected":""}">
+         <span class="pill">${s.tag}</span>${allergenFlags(s).map(a=>`<span class="pill">Contains ${a}</span>`).join('')}<h4>${s.name}</h4>
+         <p>${s.serving} - ${s.cal} kcal - ${s.protein} g protein per serving</p>
+         ${pricesEntered ? `<p><strong>Estimated food cost:</strong> ${money(recipeCost(s))} per serving${unpricedCount(s)>0?` <span class="note">(${unpricedCount(s)} ingredient${unpricedCount(s)>1?'s':''} unpriced)</span>`:''}</p>` : ''}
+         <button class="${sideSelected?"primary":"secondary"}" onclick="selectSide(${day},'${type}',${i})">${sideSelected?"Selected":"Add side"}</button>
+         ${recipeCard(s,bulkServings)}
+       </div>`;
+     });
+     dayCardsHtml+=`</div></div>`;
+
+     recipeBookletHtml+=`<h5 style="text-transform:capitalize">${type}: ${selectedRecipe.name}</h5>${printRecipeCard(selectedRecipe,bulkServings)}`;
+
+     if(chosenSide>=0){
+       const selectedSide=sides[type][chosenSide];
+       addRecipeIngredients(grocery,selectedSide,ppl,bufferFactor,gfCount,dfCount);
+       dayCal+=selectedSide.cal; dayProtein+=selectedSide.protein;
+       menuRowMeals[type]+=` + ${selectedSide.name}`;
+       recipeBookletHtml+=`<h5>Side: ${selectedSide.name}</h5>${printRecipeCard(selectedSide,bulkServings)}`;
+       dayCardsHtml+=`<p class="note"><strong>Meal total with side:</strong> ${selectedRecipe.cal+selectedSide.cal} kcal - ${selectedRecipe.protein+selectedSide.protein} g protein per person</p>`;
+       dayCardsHtml+=dietaryPanel(day,type,{ing:[...selectedRecipe.ing,...selectedSide.ing]},ppl);
+     }else{
+       dayCardsHtml+=`<p class="note"><strong>Meal total:</strong> ${selectedRecipe.cal} kcal - ${selectedRecipe.protein} g protein per person</p>`;
+       dayCardsHtml+=dietaryPanel(day,type,selectedRecipe,ppl);
+     }
+   }
+   dayCardsHtml+=`</div></div>`;
+   recipeBookletHtml+=`</div>`;
+   menuTableRows+=`<tr><td><strong>Day ${day}<br>${label}</strong></td><td>${menuRowMeals.breakfast}</td><td>${menuRowMeals.lunch}</td><td>${menuRowMeals.dinner}</td></tr>`;
+   const calStatus = dayCal>=calTarget ? "meets target" : "below target";
+   const proteinStatus = dayProtein>=protein ? "meets target" : "below target";
+   dayTotalsRows+=`<tr><td><strong>Day ${day} — ${label}</strong></td><td>${dayCal} kcal <span class="note">(${calStatus})</span></td><td>${dayProtein} g protein <span class="note">(${proteinStatus})</span></td></tr>`;
+ }
+
+ html+=`<div class="section"><h3>Your week at a glance</h3>
+   ${repeatWarnings.length ? `<div class="cost-alert cost-pending">${repeatWarnings.map(w=>`⚠ ${w}`).join("<br>")}</div>` : ''}
+   <table class="cost-table">
+     <thead><tr><th>Day</th><th>Breakfast</th><th>Lunch</th><th>Dinner</th></tr></thead>
+     <tbody>${menuTableRows}</tbody>
+   </table>
+ </div>
+ ${dayTabsHtml}
+ ${dayCardsHtml}`;
+
+ currentGrocery = grocery;
+ const groceryEntries=Object.entries(grocery).sort((a,b)=>a[0].localeCompare(b[0]));
+ let totalCost=0;
+ groceryEntries.forEach(([n,v])=>{ totalCost += unitCost(n,v.q,v.u); });
+ const baseCostWithoutBuffer = totalCost / bufferFactor;
+ const bufferCost = totalCost - baseCostWithoutBuffer;
+ const costPerPerson = totalCost / ppl;
+ const costPerPersonDay = totalCost / (ppl*d);
+ const budget = Number(eventBudget.value||0);
+ const budgetAlert = budget>0
+   ? (totalCost<=budget
+      ? `<div class="cost-alert cost-ok">Within budget by ${money(budget-totalCost)}.</div>`
+      : `<div class="cost-alert cost-over">Over budget by ${money(totalCost-budget)}.</div>`)
+   : "";
+ const pricedItemCount = groceryEntries.filter(([n])=>(ingredientPrices[n]&&ingredientPrices[n].price)>0).length;
+ const unpricedNote = pricesEntered && pricedItemCount<groceryEntries.length
+   ? `<div class="cost-alert cost-pending">${pricedItemCount} of ${groceryEntries.length} grocery items have a price entered. Unpriced items are marked below and currently count as ${money(0)} in the totals — the totals will be too low until they're filled in.</div>`
+   : "";
+
+ html+=`<div class="section print-only-grocery"><h3>Combined grocery list for selected meals</h3><p class="sub">${bufferFactor===1?"No grocery buffer included.":`Includes ${Math.round((bufferFactor-1)*100)}% buffer.`}</p><ul class="grocery-cols">`;
+ groceryEntries.forEach(([n,v])=>{
+   const isPriced = (ingredientPrices[n]&&ingredientPrices[n].price)>0;
+   const priceTag = pricesEntered
+     ? (isPriced ? ` <span class="note">(${money(unitCost(n,v.q,v.u))})</span>` : ` <span class="pill" style="background:#f7e7e2">not priced yet</span>`)
+     : '';
+   html+=`<li><strong>${formatQty(v.q,v.u)}</strong> ${n}${v.note?` <span class="pill">${v.note}</span>`:''}${priceTag}</li>`;
+ });
+ html+=`</ul></div>
+
+ <div class="section costing-report">
+   <h3>Food costing report</h3>
+   ${pricesEntered ? `${budgetAlert}${unpricedNote}
+   <div class="cost-grid">
+     <div class="macro"><strong>${money(totalCost)}</strong><span>total event food cost</span></div>
+     <div class="macro"><strong>${money(costPerPerson)}</strong><span>cost per person</span></div>
+     <div class="macro"><strong>${money(costPerPersonDay)}</strong><span>cost per person/day</span></div>
+     <div class="macro"><strong>${money(bufferCost)}</strong><span>cost of grocery buffer</span></div>
+   </div>` : `<div class="cost-alert cost-pending">No prices entered yet — enter your actual grocery prices below to see totals, cost per person and budget comparison.</div>`}
+   <p class="cost-note">Enter the actual unit prices from your receipt, invoice or supplier order. Taxes, delivery charges, labour and equipment are not included unless you add them separately.</p>
+   <details open><summary>Enter the prices you paid</summary>
+     ${priceEditorTable(groceryEntries.map(([n])=>n))}
+   </details>
+ </div>
+
+ <div class="section"><details><summary>Bulk kitchen guidance</summary>
+ <p class="sub">For 50-100 servings, divide recipes into manageable batches, confirm equipment capacity, cool foods rapidly when required, and use calibrated thermometers. Hotel-pan yield varies by dish, depth and serving size, so test one batch before final production.</p></details></div>
+
+ <div class="section print-only-menu">
+   <h3>Weekly Menu — ${d}-day plan for ${ppl}</h3>
+   <table class="cost-table">
+     <thead><tr><th>Day</th><th>Breakfast</th><th>Lunch</th><th>Dinner</th></tr></thead>
+     <tbody>${menuTableRows}</tbody>
+   </table>
+ </div>
+
+ <div class="section print-only-recipes">
+   <h3>Recipe Booklet — ${d}-day plan, scaled to ${bulkServings} servings</h3>
+   ${recipeBookletHtml}
+ </div>
+
+ <div class="section print-only-nutrition">
+   <h3>Nutrition & Education</h3>
+   <table class="cost-table">
+     <thead><tr><th>Day</th><th>Calories (planned)</th><th>Protein (planned)</th></tr></thead>
+     <tbody>${dayTotalsRows}</tbody>
+   </table>
+   <p class="sub">Target: ${calTarget} kcal and ${protein} g protein per person per day.</p>
+
+   <div class="edu-block">
+     <h5>Why protein matters</h5>
+     <p>Protein supplies the amino acids used to repair and build muscle after training, and it helps keep people full between meals. Spreading protein across breakfast, lunch and dinner, rather than loading it all into one meal, generally supports recovery better than one large serving.</p>
+   </div>
+   <div class="edu-block">
+     <h5>Why carbohydrates matter</h5>
+     <p>Carbohydrates such as rice, oats, potatoes, pasta and fruit are the body's preferred fuel for moderate-to-high intensity activity. Athletes training multiple times a day typically need more carbohydrate-rich foods around training sessions to keep energy levels up.</p>
+   </div>
+   <div class="edu-block">
+     <h5>Hydration</h5>
+     <p>Thirst is a late signal of dehydration. Pale yellow urine is a simple day-to-day indicator of good hydration. Water is usually enough for activity under an hour; longer or hotter sessions may benefit from electrolytes.</p>
+   </div>
+   <div class="edu-block">
+     <h5>Timing around activity</h5>
+     <p>A light meal with carbohydrate and some protein 2-3 hours before activity, and a combined carbohydrate-and-protein snack or meal within about an hour after, supports both performance and recovery.</p>
+   </div>
+   <p class="cost-note">These figures are planning estimates only, not individualized nutrition advice. Consult a registered dietitian for medical or performance nutrition guidance specific to any individual.</p>
+ </div>
+
+ <div class="section">
+   <h3>Print & Share</h3>
+   <p class="sub">Each button prints a clean, kitchen-ready version of just that document.</p>
+   <div class="print-choice-row">
+     <button class="secondary" onclick="printSection('menu')">Weekly Menu</button>
+     <button class="secondary" onclick="printSection('grocery')">Grocery List</button>
+     <button class="secondary" onclick="printSection('recipes')">Recipe Booklet</button>
+     <button class="secondary" onclick="printSection('nutrition')">Nutrition & Education</button>
+     <button class="secondary" onclick="window.print()">Print / Save entire plan as PDF</button>
+     <button class="secondary" onclick="copyPlan()">Copy plan as text</button>
+   </div>
+ </div>`;
+ output.innerHTML=html;
+ }catch(error){
+   console.error(error);
+   output.innerHTML=`<div class="cost-alert cost-over"><strong>The plan could not be generated.</strong><br>${error.message}</div>`;
+ }
+}
+function copyPlan(){navigator.clipboard.writeText(output.innerText).then(()=>alert("Plan copied."))}
+
+if(storageAvailable){
+  try{ supplierName.value = localStorage.getItem("feedCrewSupplierName") || "My grocery prices"; }
+  catch(e){ supplierName.value="My grocery prices"; }
+  storageNote.textContent="Saved prices will be remembered in this browser next time you open the planner.";
+}else{
+  supplierName.value="My grocery prices";
+  storageNote.textContent="This preview can't save prices between visits. On the live site this will work normally.";
+}
+
+toggleWeight();applyProfile();calcProtein();generate();
+</script>
+</body>
+</html>

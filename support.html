@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Support — Feed the Crew</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;1,500&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-nav">
+  <div class="nav-row">
+    <a href="index.html" class="wordmark">Feed the <span>Crew</span></a>
+    <button class="nav-toggle" aria-label="Menu" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="pricing.html">Pricing</a></li>
+      <li><a href="faq.html">Q&amp;A</a></li>
+      <li><a href="support.html">Support</a></li>
+      <li><a href="app.html" class="nav-cta">Start planning</a></li>
+    </ul>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h1>We're here if you get stuck.</h1>
+    <p style="color:var(--ink-soft); max-width:56ch">Three ways to reach us, depending on how urgent it is and which plan you're on.</p>
+
+    <div class="support-grid">
+      <div class="card">
+        <h3>Email</h3>
+        <p style="color:var(--ink-soft)">All plans. Response within 1 business day.</p>
+        <p><a href="mailto:support@feedthecrew.com">support@feedthecrew.com</a></p>
+      </div>
+      <div class="card">
+        <h3>Phone</h3>
+        <p style="color:var(--ink-soft)">Pro &amp; Catering plans. [Add hours, e.g. Mon–Fri, 9am–5pm ET.]</p>
+        <p><a href="tel:+10000000000">[Add phone number]</a></p>
+      </div>
+      <div class="card">
+        <h3>AI Support</h3>
+        <p style="color:var(--ink-soft)">All plans, any time. Answers common questions about your plan, pricing, and how features work instantly.</p>
+        <p style="color:var(--ink-soft); font-size:.9rem">Look for the chat icon in the bottom corner of any page.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<section>
+  <div class="wrap">
+    <h2>Before you reach out</h2>
+    <p style="color:var(--ink-soft)">Most questions are already answered on our <a href="faq.html">Q&amp;A page</a> — worth a quick check first, especially for billing, dietary swap, and AI-accuracy questions.</p>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<section>
+  <div class="wrap">
+    <h2>Send us a message</h2>
+    <p style="color:var(--ink-soft); max-width:56ch">This form doesn't send anywhere yet — wire it up to your email provider or a form service (like Formspree) once you're ready to publish.</p>
+    <form style="max-width:480px; margin-top:20px" onsubmit="event.preventDefault(); alert('Connect this form to an email service before publishing.');">
+      <label style="display:block; font-weight:600; margin-bottom:6px">Name</label>
+      <input type="text" required style="width:100%; padding:11px; border:1px solid var(--line); border-radius:8px; margin-bottom:16px; font-family:inherit">
+      <label style="display:block; font-weight:600; margin-bottom:6px">Email</label>
+      <input type="email" required style="width:100%; padding:11px; border:1px solid var(--line); border-radius:8px; margin-bottom:16px; font-family:inherit">
+      <label style="display:block; font-weight:600; margin-bottom:6px">Message</label>
+      <textarea rows="4" required style="width:100%; padding:11px; border:1px solid var(--line); border-radius:8px; margin-bottom:16px; font-family:inherit"></textarea>
+      <button type="submit" class="btn btn-primary">Send message</button>
+    </form>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <a href="index.html" class="wordmark">Feed the <span>Crew</span></a>
+      <ul class="footer-links">
+        <li><a href="pricing.html">Pricing</a></li>
+        <li><a href="faq.html">Q&amp;A</a></li>
+        <li><a href="support.html">Support</a></li>
+        <li><a href="privacy.html">Privacy</a></li>
+        <li><a href="terms.html">Terms</a></li>
+      </ul>
+    </div>
+    <p class="footer-note">© 2026 Feed the Crew.</p>
+  </div>
+</footer>
+
+</body>
+</html>
