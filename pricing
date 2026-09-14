@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pricing — Feed the Crew</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;1,500&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-nav">
+  <div class="nav-row">
+    <a href="index.html" class="wordmark">Feed the <span>Crew</span></a>
+    <button class="nav-toggle" aria-label="Menu" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="pricing.html">Pricing</a></li>
+      <li><a href="faq.html">Q&amp;A</a></li>
+      <li><a href="support.html">Support</a></li>
+      <li><a href="app.html" class="nav-cta">Start planning</a></li>
+    </ul>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h1>Two plans, no guessing which one fits.</h1>
+    <p style="color:var(--ink-soft); font-size:1.1rem; max-width:56ch">Both plans include the full recipe rotation, grocery lists, and dietary swaps. Pro adds room for bigger groups and the AI-powered tools that save real time on repeat use.</p>
+
+    <div class="pricing-grid">
+      <div class="plan">
+        <h3>Home &amp; Family</h3>
+        <p style="color:var(--ink-soft)">For reunions, potlucks, and holidays.</p>
+        <div class="price">$9<small>/month</small></div>
+        <p style="color:var(--ink-soft); font-size:.9rem">or $79/year</p>
+        <ul>
+          <li>Plan for up to 20 people</li>
+          <li>Up to 3 days at a time</li>
+          <li>Full recipe rotation with sides</li>
+          <li>Grocery list with live cost tracking</li>
+          <li>Gluten-free / dairy-free swaps</li>
+          <li>Add your own recipes (manual entry)</li>
+          <li>1 active plan at a time</li>
+          <li>Email support</li>
+        </ul>
+        <a href="https://buy.stripe.com/6oUdRa8RqghhcqZcUna7C01" class="btn btn-secondary" style="text-align:center">Start with Home &amp; Family</a>
+      </div>
+
+      <div class="plan featured">
+        <span class="tag">Most popular for regular use</span>
+        <h3>Pro &amp; Catering</h3>
+        <p style="color:var(--ink-soft)">For coaches, camps, and professional kitchens.</p>
+        <div class="price">$39<small>/month</small></div>
+        <p style="color:var(--ink-soft); font-size:.9rem">or $349/year</p>
+        <ul>
+          <li>Everything in Home &amp; Family</li>
+          <li>Plan for up to 200 people</li>
+          <li>Full 7-day rotation, unlimited days</li>
+          <li>Unlimited custom recipes</li>
+          <li>Multiple saved plans / client profiles</li>
+          <li>AI receipt scanner</li>
+          <li>AI nutrition estimator</li>
+          <li>Priority email + phone support</li>
+          <li>Full print/export suite</li>
+        </ul>
+        <a href="https://buy.stripe.com/14A7sMd7GaWX9eN7A3a7C00" class="btn btn-primary" style="text-align:center">Start with Pro &amp; Catering</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<section>
+  <div class="wrap">
+    <h2>Compare in detail</h2>
+    <table class="compare-table">
+      <thead><tr><th>Feature</th><th>Home &amp; Family</th><th>Pro &amp; Catering</th></tr></thead>
+      <tbody>
+        <tr><td>Group size</td><td>Up to 20 people</td><td>Up to 200 people</td></tr>
+        <tr><td>Days per plan</td><td>Up to 3</td><td>Up to 7</td></tr>
+        <tr><td>Custom recipes</td><td>Manual entry</td><td>Unlimited, with AI nutrition estimate</td></tr>
+        <tr><td>Saved plans</td><td>1 at a time</td><td>Multiple / client profiles</td></tr>
+        <tr><td>AI receipt scanner</td><td>—</td><td>✓</td></tr>
+        <tr><td>Print &amp; export suite</td><td>Grocery list only</td><td>Full suite (menu, grocery, recipes, nutrition)</td></tr>
+        <tr><td>Support</td><td>Email</td><td>Priority email + phone</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<section>
+  <div class="wrap">
+    <h2>Questions before you sign up?</h2>
+    <p><a href="faq.html">Read the full Q&amp;A →</a> or <a href="support.html">contact support</a>.</p>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <a href="index.html" class="wordmark">Feed the <span>Crew</span></a>
+      <ul class="footer-links">
+        <li><a href="pricing.html">Pricing</a></li>
+        <li><a href="faq.html">Q&amp;A</a></li>
+        <li><a href="support.html">Support</a></li>
+        <li><a href="privacy.html">Privacy</a></li>
+        <li><a href="terms.html">Terms</a></li>
+      </ul>
+    </div>
+    <p class="footer-note">© 2026 Feed the Crew. Prices shown in USD; cancel anytime.</p>
+  </div>
+</footer>
+
+</body>
+</html>
